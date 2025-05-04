@@ -1,0 +1,43 @@
+name: Run Code Daily
+
+# Schedule to run at 5:00 AM UTC every day (adjust the time as needed)
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 5:00 AM UTC every day which is 08:00 AM my local time
+  workflow_dispatch:      # Allows manual trigger of workflow if needed
+
+jobs:
+  run-daily:
+    runs-on: windows-latest
+
+    # Environment variables for the job
+    env:
+      PEXELKEY: ${{ secrets.PEXELKEY }}
+      cloudname: ${{ secrets.cloudname }}
+      APIKEY: ${{ secrets.APIKEY }}
+      APISECRET: ${{ secrets.APISECRET }}
+      api_KEY_youtube: ${{ secrets.api_KEY_youtube }}
+      client_id_youtube: ${{ secrets.client_id_youtube }}
+      client_secret_youtube: ${{ secrets.client_secret_youtube }}
+
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'  # Use the appropriate Python version
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Run the Python script
+      - name: Run script
+        run: python linkedin.py
