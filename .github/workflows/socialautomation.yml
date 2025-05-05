@@ -48,14 +48,6 @@ jobs:
           echo "Files after script run:"
           dir
 
-      - name: Upload video artifacts (for debugging)
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: videos
-          path: |
-            /temp/final_video.mp4
-            /temp/transformed_video.mp4
 
       - name: List all files after script
         run: dir
