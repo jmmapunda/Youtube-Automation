@@ -1,16 +1,14 @@
 name: Run Code Daily
 
-# Schedule to run at 5:00 AM UTC every day (adjust the time as needed)
 on:
   schedule:
-    - cron: '0 5 * * *'  # 5:00 AM UTC every day which is 08:00 AM my local time
-  workflow_dispatch:      # Allows manual trigger of workflow if needed
+    - cron: '0 5 * * *'  # 5:00 AM UTC daily
+  workflow_dispatch:      # Manual trigger
 
 jobs:
   run-daily:
     runs-on: windows-latest
 
-    # Environment variables for the job
     env:
       PEXELKEY: ${{ secrets.PEXELKEY }}
       cloudname: ${{ secrets.cloudname }}
@@ -20,24 +18,41 @@ jobs:
       client_id_youtube: ${{ secrets.client_id_youtube }}
       client_secret_youtube: ${{ secrets.client_secret_youtube }}
 
-
     steps:
-      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'  # Use the appropriate Python version
+          python-version: '3.12'
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Run the Python script
+      - name: Debug — Show directory contents before running script
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          dir
+
       - name: Run script
-        run: python youtube.py
+        run: |
+          python youtube.py
+
+      - name: Debug — Show files after running script
+        run: |
+          echo "Files after script run:"
+          dir
+
+      - name: Upload video artifacts (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: videos
+          path: |
+            final_video.mp4
+            transformed_video.mp4

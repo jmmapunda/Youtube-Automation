@@ -17,7 +17,7 @@ import cloudinary.api
 import time
 from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 PEXELKEY = os.getenv('PEXELKEY')
 cloudname = os.getenv('cloudname')
 APIKEY = os.getenv('APIKEY')
