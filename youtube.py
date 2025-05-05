@@ -133,7 +133,7 @@ else:
             ])
 
 
-download_path = "transformed_video.mp4"
+download_path = "/temp/transformed_video.mp4"
 urlretrieve(video_url_original, download_path)
 upload_result_original = cloudinary.uploader.upload(download_path, public_id="horoscope_trimmed", resource_type="video")
 print(f'Trimmed video url:{upload_result_original["secure_url"]}')
@@ -195,12 +195,9 @@ def horoscope_time_group(time_to_use):  #data_daily or data_weekly or data_month
 
     # ✅ Upload final video to YouTube
     if final_video_url:
-        local_path = "final_video.mp4"
+        local_path = "/temp/final_video.mp4"
         urlretrieve(final_video_url, local_path)
-        with open(local_path, "wb") as f:
-            f.write(local_path)
-
-        print("Saved video to:", os.path.abspath(local_path))
+        download_video_from_url(final_video_url, local_path)
         upload_video(local_path, youtube_title, youtube_description)
         os.remove(local_path)  # Cleanup
 
