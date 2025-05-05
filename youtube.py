@@ -28,11 +28,9 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
-print("refresh_token:", YOUTUBE_REFRESH_TOKEN[:5] + "..." if YOUTUBE_REFRESH_TOKEN else "MISSING")
-print("client_id:", client_id_youtube[:5] + "..." if client_id_youtube else "MISSING")
-print("client_secret:", client_secret_youtube[:5] + "..." if client_secret_youtube else "MISSING")
-
-exit()
+# print("refresh_token:", YOUTUBE_REFRESH_TOKEN[:5] + "..." if YOUTUBE_REFRESH_TOKEN else "MISSING")
+# print("client_id:", client_id_youtube[:5] + "..." if client_id_youtube else "MISSING")
+# print("client_secret:", client_secret_youtube[:5] + "..." if client_secret_youtube else "MISSING")
 
 def horoscope(time, data):
     response = requests.get(time).json()
