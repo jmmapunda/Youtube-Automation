@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-daily:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     env:
       PEXELKEY: ${{ secrets.PEXELKEY }}
@@ -54,7 +54,8 @@ jobs:
         with:
           name: videos
           path: |
-            final_video.mp4
-            transformed_video.mp4
+            /temp/final_video.mp4
+            /temp/transformed_video.mp4
+
       - name: List all files after script
         run: dir
