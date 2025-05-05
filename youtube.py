@@ -198,6 +198,7 @@ def horoscope_time_group(time_to_use):  #data_daily or data_weekly or data_month
         local_path = "/tmp/final_video.mp4"
         urlretrieve(final_video_url, local_path)
         download_video_from_url(final_video_url, local_path)
+        print("Downloaded video to", local_path)
         upload_video(local_path, youtube_title, youtube_description)
         os.remove(local_path)  # Cleanup
 
