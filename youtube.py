@@ -6,6 +6,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 import os
 import pickle
 import cloudinary.uploader
@@ -17,7 +18,7 @@ import cloudinary.api
 import time
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 PEXELKEY = os.getenv('PEXELKEY')
 cloudname = os.getenv('cloudname')
 APIKEY = os.getenv('APIKEY')
@@ -25,7 +26,7 @@ APISECRET = os.getenv('APISECRET')
 api_KEY_youtube = os.getenv('api_KEY_youtube')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
-
+YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
 
 def horoscope(time, data):
@@ -35,8 +36,8 @@ def horoscope(time, data):
         "horoscope": response['data']['horoscope_data']
         })
 
-horoscope_signs = ["Aries", "Taurus",]# "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
-                   #"Capricorn", "Aquarius", "Pisces"]
+horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
+                   "Capricorn", "Aquarius", "Pisces"]
 
 data_daily = []
 data_weekly = []
@@ -133,7 +134,7 @@ else:
             ])
 
 
-download_path = "/tmp/transformed_video.mp4"
+download_path = "transformed_video.mp4"
 urlretrieve(video_url_original, download_path)
 upload_result_original = cloudinary.uploader.upload(download_path, public_id="horoscope_trimmed", resource_type="video")
 print(f'Trimmed video url:{upload_result_original["secure_url"]}')
@@ -173,7 +174,7 @@ def horoscope_time_group(time_to_use):  #data_daily or data_weekly or data_month
     offset_finish = 8
     final_video_url = ''
     for i in range(len(horoscope_signs)):
-        print(f'for i.. {i}')
+        print(f'for i.. {i + 1}')
         first_line = "%0A".join([time_to_use[i]['sign'],])
         rest_of_horoscope = "%0A".join([time_to_use[i]['horoscope'],])
 
@@ -184,26 +185,32 @@ def horoscope_time_group(time_to_use):  #data_daily or data_weekly or data_month
         video_url_second = cloudinary_text_overlay(rest_of_horoscope, '#002333', 60, 'center', offset, offset_finish)
         urlretrieve(video_url_second, download_path)
         upload_result_second = cloudinary.uploader.upload(download_path, public_id="horoscope_trimmed", resource_type="video")
-
+        time.sleep(3)
         offset += 8
         offset_finish += 8
         print(f'Batch url:{int(i) + 1}', upload_result_second["secure_url"])
-        if time_to_use[i]['sign'] == "Taurus":
+        if time_to_use[i]['sign'] == horoscope_signs[len(horoscope_signs)-1]:
             final_video_url = upload_result_second["secure_url"]
 
     print("Generated Final Video URL with Overlay:", final_video_url)
 
     # ✅ Upload final video to YouTube
-    if final_video_url:
-        local_path = "/tmp/final_video.mp4"
+    local_path = "final_video.mp4"
+    print("Uploading started...")
+
+    try:
         urlretrieve(final_video_url, local_path)
-        download_video_from_url(final_video_url, local_path)
-        print("Downloaded video to", local_path)
         upload_video(local_path, youtube_title, youtube_description)
-        os.remove(local_path)  # Cleanup
-
-
-
+        print("Uploaded video successfully.")
+    except Exception as e:
+        print(f"Failed to upload video: {e}")
+    finally:
+        if os.path.exists(local_path):
+            try:
+                os.remove(local_path)
+                print("Cleaned up local video file.")
+            except Exception as cleanup_error:
+                print(f"Failed to delete local video file: {cleanup_error}")
 
 
 url_youtube = 'https://www.googleapis.com/youtube/v3'
@@ -231,13 +238,14 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 def authenticate_youtube():
     creds = Credentials(
-        None,
-        refresh_token=os.getenv('YOUTUBE_REFRESH_TOKEN'),
+        token=None,
+        refresh_token=YOUTUBE_REFRESH_TOKEN,
         token_uri='https://oauth2.googleapis.com/token',
-        client_id=os.getenv('client_id_youtube'),
-        client_secret=os.getenv('client_secret_youtube'),
+        client_id=client_id_youtube,
+        client_secret=client_secret_youtube,
         scopes=["https://www.googleapis.com/auth/youtube.upload"],
     )
+    creds.refresh(Request())  # This fetches a new access token using the refresh token
     youtube = build('youtube', 'v3', credentials=creds)
     return youtube
 
@@ -248,7 +256,6 @@ def download_video_from_url(url, save_path):
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
-
 
 # Upload to YouTube
 def upload_video(file_path, title, description):
@@ -299,12 +306,13 @@ for dataset in time_occurrences:
     for item in dataset:
         youtube_description_data.append(f"{item['sign']}: {item['horoscope']}\n")
 
-youtube_description = ''.join(youtube_description_data)
+youtube_description = ''.join(youtube_description_data)[:4000]
 
 
 for time_occurrence in time_occurrences:
     try:
         horoscope_time_group(time_occurrence)
+
         print(time_occurrence)
     except Exception as e:
         print(f"{time_occurrence} An error occurred: {e}")
