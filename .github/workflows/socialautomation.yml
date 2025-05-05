@@ -17,6 +17,7 @@ jobs:
       api_KEY_youtube: ${{ secrets.api_KEY_youtube }}
       client_id_youtube: ${{ secrets.client_id_youtube }}
       client_secret_youtube: ${{ secrets.client_secret_youtube }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
 
     steps:
       - name: Check out repository
