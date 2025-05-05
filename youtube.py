@@ -1,11 +1,11 @@
 from typing import override
-
 import requests
 import random
 from datetime import datetime
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from google.oauth2.credentials import Credentials
 import os
 import pickle
 import cloudinary.uploader
@@ -35,8 +35,8 @@ def horoscope(time, data):
         "horoscope": response['data']['horoscope_data']
         })
 
-horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
-                   "Capricorn", "Aquarius", "Pisces"]
+horoscope_signs = ["Aries", "Taurus",]# "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
+                   #"Capricorn", "Aquarius", "Pisces"]
 
 data_daily = []
 data_weekly = []
@@ -214,16 +214,28 @@ print(response)
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 # Authenticate and get credentials
+# def authenticate_youtube():
+#     creds = None
+#     if os.path.exists("token.pickle"):
+#         with open("token.pickle", "rb") as token:
+#             creds = pickle.load(token)
+#     if not creds:
+#         flow = InstalledAppFlow.from_client_secrets_file("client_secret_youtube.json", SCOPES)
+#         creds = flow.run_local_server(port=0)
+#         with open("token.pickle", "wb") as token:
+#             pickle.dump(creds, token)
+#     youtube = build('youtube', 'v3', credentials=creds)
+#     return youtube
+
 def authenticate_youtube():
-    creds = None
-    if os.path.exists("token.pickle"):
-        with open("token.pickle", "rb") as token:
-            creds = pickle.load(token)
-    if not creds:
-        flow = InstalledAppFlow.from_client_secrets_file("client_secret_youtube.json", SCOPES)
-        creds = flow.run_local_server(port=0)
-        with open("token.pickle", "wb") as token:
-            pickle.dump(creds, token)
+    creds = Credentials(
+        None,
+        refresh_token=os.getenv('YOUTUBE_REFRESH_TOKEN'),
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=os.getenv('client_id_youtube'),
+        client_secret=os.getenv('client_secret_youtube'),
+        scopes=["https://www.googleapis.com/auth/youtube.upload"],
+    )
     youtube = build('youtube', 'v3', credentials=creds)
     return youtube
 
@@ -291,5 +303,16 @@ youtube_description = ''.join(youtube_description_data)
 for time_occurrence in time_occurrences:
     try:
         horoscope_time_group(time_occurrence)
+        print(time_occurrence)
     except Exception as e:
         print(f"{time_occurrence} An error occurred: {e}")
+
+# from google_auth_oauthlib.flow import InstalledAppFlow
+#
+# SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+#
+# flow = InstalledAppFlow.from_client_secrets_file("client_secret_youtube.json", SCOPES)
+# creds = flow.run_local_server(port=0)
+#
+# print("Access Token:", creds.token)
+# print("Refresh Token:", creds.refresh_token)
