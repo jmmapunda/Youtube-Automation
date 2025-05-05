@@ -56,3 +56,5 @@ jobs:
           path: |
             final_video.mp4
             transformed_video.mp4
+      - name: List all files after script
+        run: dir
