@@ -38,11 +38,3 @@ jobs:
         run: |
           python youtube.py
 
-      - name: Push changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://<YOUR_PAT>@github.com/jmmapunda/Youtube-Automation.git
-          git push
-        env:
-          YOUR_PAT: ${{ secrets.yt_token }}
