@@ -1,4 +1,3 @@
-from typing import override
 import requests
 import random
 from datetime import datetime
@@ -46,22 +45,23 @@ data_daily = []
 data_weekly = []
 data_monthly = []
 
+today_date = datetime.now().strftime('%B %d, %Y')
+
 for sign in horoscope_signs:
     horoscope_daily = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign={sign}&day=TODAY"
     horoscope_weekly = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/weekly?sign={sign}"
     horoscope_monthly = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/monthly?sign={sign}"
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
-        youtube_title = 'Monthly Horoscope'
+        youtube_title = f'Month of {datetime.now().strftime('%B')} Horoscope - {today_date}'
 
     elif datetime.now().weekday() == 0:
         horoscope(horoscope_weekly, data_weekly)
-        youtube_title = 'Weekly Horoscope'
+        youtube_title = f"This Week's Horoscope - {today_date}"
 
     else:
         horoscope(horoscope_daily, data_daily)
-        youtube_title = 'Daily Horoscope'
-
+        youtube_title = f"Today's {today_date} Horoscope"
 
 
 print(f'daily data: {data_daily}')
