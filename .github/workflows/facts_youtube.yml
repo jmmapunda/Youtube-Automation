@@ -1,0 +1,37 @@
+name: Run Code Daily
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # 5:00 AM UTC daily
+  workflow_dispatch:      # Manual trigger
+
+jobs:
+  run-daily:
+    runs-on: ubuntu-latest
+
+    env:
+      api_KEY_youtube: ${{ secrets.api_KEY_youtube }}
+      client_id_youtube: ${{ secrets.client_id_youtube }}
+      client_secret_youtube: ${{ secrets.client_secret_youtube }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # Allow committing back
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run script
+        run: |
+          python facts_youtube.py
+
