@@ -1,4 +1,4 @@
-name: Run Code Daily
+name: Horoscope Youtube Daily @ 0800
 
 on:
   schedule:
