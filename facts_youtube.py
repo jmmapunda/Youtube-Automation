@@ -27,54 +27,29 @@ day_of_year = today.timetuple().tm_yday
 results = requests.get(URL).json()['text']
 results_2 = requests.get(URL_2).text
 facts_description = random.choice([results, results_2])
+#TODO add more line 'how was is created?' 'contact info' 'disclaimers and copyrights'
 
 
 closing_texts = [
-    "Subscribe for more daily facts!",
-    "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
-    "Come back tomorrow for your next fact!\nSubscribe",
-    "One fact a day keeps boredom away\nSubscribe!",
-    "Hit like if you learned something new!",
-    "Share this with a friend who loves facts!",
-    "Comment your favorite fact below!",
-    "New facts every day \ndon’t miss out!\nSubscribe",
+    "Subscribe for more daily facts!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
+    "Come back tomorrow for your next fact!\nSubscribe", "One fact a day keeps boredom away\nSubscribe!",
+    "Hit like if you learned something new!", "Share this with a friend who loves facts!",
+    "Comment your favorite fact below!", "New facts every day \ndon’t miss out!\nSubscribe",
     "That’s it for today \nsee you tomorrow with another surprise!\nSubscribe",
-    "This was just the beginning \nsubscribe for more!",
-    "Fuel your brain daily \nhit that subscribe button!",
-    "A fact a day makes you wiser \nsubscribe now!",
-    "Join our fact family \nhit subscribe!",
-    "Want more mind-blowing facts? You know what to do!\nSubscribe",
-    "Don’t miss a day \nturn on notifications!",
-    "More facts, more fun \nsee you next time!",
-    "The learning never stops \nsubscribe and stay curious!",
-    "Thanks for watching! Subscribe for tomorrow’s fact!",
-    "Let’s make learning a habit \nsubscribe today!",
+    "This was just the beginning \nsubscribe for more!", "Fuel your brain daily \nhit that subscribe button!",
+    "A fact a day makes you wiser \nsubscribe now!", "Join our fact family \nhit subscribe!",
+    "Want more mind-blowing facts? You know what to do!\nSubscribe", "Don’t miss a day \nturn on notifications!",
+    "More facts, more fun \nsee you next time!", "The learning never stops \nsubscribe and stay curious!",
+    "Thanks for watching! Subscribe for tomorrow’s fact!", "Let’s make learning a habit \nsubscribe today!",
     "Knowledge is power \nsubscribe and get yours daily!",
-]
+    ]
 closing_text = random.choice(closing_texts)
 
 hashtags = [
-    "DailyFacts",
-    "FunFact",
-    "DidYouKnow",
-    "FactOfTheDay",
-    "LearnSomethingNew",
-    "RandomFacts",
-    "InterestingFacts",
-    "MindBlown",
-    "Shorts",
-    "YouTubeShorts",
-    "KnowledgeIsPower",
-    "StayCurious",
-    "FactShorts",
-    "QuickFacts",
-    "TriviaTime",
-    "FactLovers",
-    "EducationInSeconds",
-    "BrainBoost",
-    "FactAddict",
-    "SmartFacts"
-]
+    "DailyFacts", "FunFact", "DidYouKnow", "FactOfTheDay", "LearnSomethingNew", "RandomFacts", "InterestingFacts",
+    "MindBlown", "Shorts", "YouTubeShorts", "KnowledgeIsPower", "StayCurious", "FactShorts", "QuickFacts", "TriviaTime",
+    "FactLovers", "EducationInSeconds", "BrainBoost", "FactAddict", "SmartFacts", "ASMR", "YOUTUBE"
+    ]
 facts_hashtags = random.sample(hashtags, 10)
 
 video = VideoFileClip("static/assets/video/video_1.mp4")
@@ -84,7 +59,7 @@ text_width = video_width - 140  # 70px left and right padding
 
 # Text 1 at 0s to 3s
 txt1 = (TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily Facts!",
-                 text_align='center', font_size=250, color='#193C40', size=(text_width, None), method='caption', )
+                 text_align='center', font_size=250, color='#DBF227', size=(text_width, None), method='caption', )
         .with_position("center", 0.1)
         .with_duration(3)
         .with_start(0))
