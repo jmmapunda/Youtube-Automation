@@ -17,8 +17,8 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
-URL = 'https://uselessfacts.jsph.pl/random.json?language=en' # .json()['text']
-URL_2 = 'http://numbersapi.com/random/trivia' # .text
+URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
+URL_2 = 'http://numbersapi.com/random/trivia'  # .text
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
@@ -122,7 +122,7 @@ def authenticate_youtube():
         client_id=client_id_youtube,
         client_secret=client_secret_youtube,
         scopes=["https://www.googleapis.com/auth/youtube.upload"],
-    )
+        )
     creds.refresh(Request())  # This fetches a new access token using the refresh token
     youtube = build('youtube', 'v3', credentials=creds)
     return youtube
@@ -136,18 +136,18 @@ def upload_video(file_path, title, description, youtube_hashtags):
             "description": description,
             "tags": youtube_hashtags,
             "categoryId": "22"
-        },
+            },
         "status": {
             "privacyStatus": "public",
             "selfDeclaredMadeForKids": False
+            }
         }
-    }
     media = MediaFileUpload(file_path, resumable=True)
     request = youtube.videos().insert(
         part="snippet,status",
         body=body,
         media_body=media
-    )
+        )
     response = request.execute()
     print(f"✅ Video uploaded: https://www.youtube.com/watch?v={response['id']}")
 
