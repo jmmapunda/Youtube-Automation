@@ -53,7 +53,7 @@ hashtags = [
 facts_hashtags = random.sample(hashtags, 10)
 
 facts_video = random.choice(range(1, 5))
-video_time = 12
+video_time = 16
 
 video_to_use = VideoFileClip(f"static/assets/video/facts_{facts_video}.mp4")
 video_duration = video_to_use.duration
@@ -65,41 +65,44 @@ video_width, video_height = video.size
 video_resized = video.resized(height=1920)
 video_final = video_resized.cropped(width=1080, x_center=video_resized.w / 2)
 
-text_width = video_width - 140  # 70px left and right padding
+text_width = 940  # 70px left and right padding
 
 # Text 1 at 0s to 3s
 txt1 = (TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily Facts!",
-                 text_align='center', font_size=250, color='#DBF227', size=(text_width, None), method='caption', )
+                 text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
+                 size=(text_width, None), method='caption', )
         .with_position("center", 0.1)
         .with_duration(3)
         .with_start(0))
 
 # Text 2 at 3s to 6s
-txt2 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results}", font_size=130,
-                 text_align='center', color='#F2E7DC', size=(text_width, None), method='caption', )
+txt2 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results}", font_size=100,
+                 text_align='center', color='#C4EEF2', stroke_color="#BF0000", stroke_width=2, size=(text_width, None),
+                 method='caption', )
         .with_position("center")
-        .with_duration(3)
+        .with_duration(5)
         .with_start(3))
 
-txt3 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results_2}", font_size=130,
-                 text_align='center', color='#F2E7DC', size=(text_width, None), method='caption', )
+txt3 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results_2}", font_size=100,
+                 text_align='center', color='#C4EEF2', stroke_color="#BF0000", stroke_width=2, size=(text_width, None),
+                 method='caption', )
         .with_position("center")
-        .with_duration(3)
-        .with_start(6))
+        .with_duration(5)
+        .with_start(8))
 
 txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
-                 text_align='center', color='#F2E7DC', size=(text_width, None), method='caption', )
+                 text_align='center', color='#0D0D0D', stroke_color="#E50000", stroke_width=2, size=(text_width, None),
+                 method='caption', )
         .with_position("center")
         .with_duration(3)
-        .with_start(9))
+        .with_start(13))
 # Optional: add background audio
 audio = AudioFileClip("static/assets/audio/audio_1.mp3").with_duration(video.duration)
 
-final = CompositeVideoClip([video, txt1, txt2, txt3, txt4])
+final = CompositeVideoClip([video_final, txt1, txt2, txt3, txt4])
 final = final.with_audio(audio)
 
 final.write_videofile("youtube_facts.mp4", fps=24)
-
 
 url_youtube = 'https://www.googleapis.com/youtube/v3'
 response = requests.get(url_youtube, api_KEY_youtube)
