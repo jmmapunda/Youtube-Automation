@@ -22,12 +22,21 @@ URL_2 = 'http://numbersapi.com/random/trivia'  # .text
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
+current_year = today.year
 
+disclaimer_copyright = (
+    "\n\n\n\nDisclaimer & Copyright Notice\nAll facts and information presented in this video are intended "
+    "for educational and informational purposes only. While every effort has been made to ensure "
+    "accuracy, we do not guarantee the completeness or reliability of any fact. Viewers are "
+    f"encouraged to verify content independently.\n\n\nCopyright © {current_year} John "
+    "Mapunda\nAll rights reserved. This video and its contents, including audio, visuals, "
+    "and branding, are the intellectual property of John Mapunda and may not be reproduced, "
+    "redistributed, or reused without express permission.\n\n\nVisit: https://johnmapunda.com for "
+    "more content and resources.")
 
 results = requests.get(URL).json()['text']
 results_2 = requests.get(URL_2).text
-facts_description = random.choice([results, results_2])
-#TODO add more line 'how was is created?' 'contact info' 'disclaimers and copyrights'
+facts_description = random.choice([results, results_2]) + disclaimer_copyright
 
 
 closing_texts = [
