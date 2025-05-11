@@ -52,8 +52,18 @@ hashtags = [
     ]
 facts_hashtags = random.sample(hashtags, 10)
 
-video = VideoFileClip("static/assets/video/video_1.mp4")
+facts_video = random.choice(range(1, 5))
+video_time = 12
+
+video_to_use = VideoFileClip(f"static/assets/video/facts_{facts_video}.mp4")
+video_duration = video_to_use.duration
+multiple_by = 1
+if video_duration < video_time:
+    multiple_by = 12 // video_duration + 1
+video = (video_to_use * multiple_by).subclipped(0, video_time)
 video_width, video_height = video.size
+video_resized = video.resized(height=1920)
+video_final = video_resized.cropped(width=1080, x_center=video_resized.w / 2)
 
 text_width = video_width - 140  # 70px left and right padding
 
