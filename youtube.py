@@ -124,7 +124,7 @@ for sign in horoscope_signs:
 horoscope_data = [data_daily, data_weekly, data_monthly]
 
 horoscope_video = random.choice(range(1, 7))
-video_time = 126
+video_time = 123
 
 video_to_use = VideoFileClip(f"static/assets/video/horoscope_{horoscope_video}.mp4")
 video_duration = video_to_use.duration
@@ -269,7 +269,7 @@ local_path = "youtube_horoscope.mp4"
 print("Uploading started...")
 
 try:
-    upload_video(file_path=local_path, title=f'Day {day_of_year} Daily Horoscope!', description=horoscope_description,
+    upload_video(file_path=local_path, title=youtube_title, description=horoscope_description,
                  youtube_hashtags=youtube_horoscope_hashtags)
     print("Uploaded video successfully.")
 # except Exception as e:
