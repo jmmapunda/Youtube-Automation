@@ -46,8 +46,8 @@ current_year = datetime.now().year
 day_of_year = today.timetuple().tm_yday
 
 
-horoscope_signs = ["Aries", "Taurus", ]#"Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
-                   # "Capricorn", "Aquarius", "Pisces"]
+horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
+                   "Capricorn", "Aquarius", "Pisces"]
 closing_texts = [
     "Subscribe for more daily horoscope!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
     "Come back tomorrow for your next fact!\nSubscribe", "One fact a day keeps boredom away\nSubscribe!",
@@ -110,7 +110,7 @@ for sign in horoscope_signs:
         youtube_title = f'Month of {datetime.now().strftime('%B')} Horoscope - {today_date}'
         sn += 1
 
-    elif datetime.now().weekday() == 2:
+    elif datetime.now().weekday() == 0:
         horoscope(horoscope_weekly, data_weekly)
         youtube_title = f"This Week's Horoscope - {today_date}"
         sn += 1
@@ -139,7 +139,7 @@ if datetime.now().day == 1:
     video_final = video_resized.cropped(width=1920, x_center=video_resized.w / 2)
     text_width = 1780  # 70px left and right padding
     font_size = 43
-elif datetime.now().weekday() == 2:
+elif datetime.now().weekday() == 0:
     video_resized = video.resized(height=1080)
     video_final = video_resized.cropped(width=1920, x_center=video_resized.w / 2)
     text_width = 1780  # 70px left and right padding
