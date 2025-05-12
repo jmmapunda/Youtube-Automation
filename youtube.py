@@ -238,7 +238,7 @@ def authenticate_youtube():
     return youtube
 
 # Upload to YouTube
-def upload_video(file_path, title, description, youtube_hashtags):
+def upload_video(file_path, title, thumbnail, description, youtube_hashtags):
     youtube = authenticate_youtube()
     body = {
         "snippet": {
@@ -259,7 +259,13 @@ def upload_video(file_path, title, description, youtube_hashtags):
         media_body=media
         )
     response = request.execute()
-    print(f"✅ Video uploaded: https://www.youtube.com/watch?v={response['id']}")
+    video_id = response['id']
+    print(f"✅ Video uploaded: https://www.youtube.com/watch?v={video_id}")
+    thumbnail_request = youtube.thumbnails().set(
+        videoId=video_id,
+        media_body=thumbnail
+        )
+    thumbnail_response = thumbnail_request.execute()
 
     # Cleanup local file
     os.remove(file_path)
@@ -267,10 +273,23 @@ def upload_video(file_path, title, description, youtube_hashtags):
 
 # ✅ Upload final video to YouTube
 local_path = "youtube_horoscope.mp4"
+thumbnail_path = "thumbnail.jpg"
 print("Uploading started...")
 
+video = VideoFileClip("youtube_facts.mp4")
+thumbnail_time = 2  # second mark to grab the frame
+frame = video.get_frame(thumbnail_time)  # Numpy array
+video.close()
+
+from PIL import Image
+import numpy as np
+
+thumbnail_img = Image.fromarray(np.uint8(frame))
+thumbnail_img.save(thumbnail_path)
+
+
 try:
-    upload_video(file_path=local_path, title=youtube_title, description=horoscope_description,
+    upload_video(file_path=local_path, thumbnail=thumbnail_path, title=youtube_title, description=horoscope_description,
                  youtube_hashtags=youtube_horoscope_hashtags)
     print("Uploaded video successfully.")
 # except Exception as e:
@@ -278,6 +297,7 @@ try:
 finally:
     if os.path.exists(local_path):
         try:
+            os.remove(thumbnail_path)
             os.remove(local_path)
             print("Cleaned up local video file.")
         except Exception as cleanup_error:
