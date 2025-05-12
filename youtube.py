@@ -123,7 +123,7 @@ for sign in horoscope_signs:
 
 horoscope_data = [data_daily, data_weekly, data_monthly]
 
-horoscope_video = random.choice(range(1, 12))
+horoscope_video = random.choice(range(1, 7))
 video_time = 26
 
 video_to_use = VideoFileClip(f"static/assets/video/horoscope_{horoscope_video}.mp4")
