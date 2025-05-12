@@ -190,8 +190,8 @@ txt_last = (
     .with_duration(3)
     .with_start(123))
 # Optional: add background audio
-audio = AudioFileClip("static/assets/audio/audio_1.mp3")
-repeats = int(video.duration // audio.duration) + 1
+audio = AudioFileClip("static/assets/audio/audio_1.mp3").subclipped(0, 20)
+repeats = int(video.duration // 20) + 1
 audio_looped = concatenate_audioclips([audio] * repeats).subclipped(0, video.duration)
 audio = CompositeAudioClip([audio_looped])
 
