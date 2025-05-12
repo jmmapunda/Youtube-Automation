@@ -44,6 +44,7 @@ today = datetime.now()
 today_date = datetime.now().strftime('%B %d, %Y')
 current_year = datetime.now().year
 day_of_year = today.timetuple().tm_yday
+current_month = today.strftime('%B')
 
 
 horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
@@ -107,7 +108,7 @@ for sign in horoscope_signs:
     sn = 1
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
-        youtube_title = f'Month of {datetime.now().strftime('%B')} Horoscope - {today_date}'
+        youtube_title = f'Month of {current_month} Horoscope - {today_date}'
         sn += 1
 
     elif datetime.now().weekday() == 0:
