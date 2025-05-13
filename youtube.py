@@ -51,15 +51,15 @@ horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra
                    "Capricorn", "Aquarius", "Pisces"]
 closing_texts = [
     "Subscribe for more daily horoscope!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
-    "Come back tomorrow for your next fact!\nSubscribe", "One fact a day keeps boredom away\nSubscribe!",
+    "Come back tomorrow for your next horoscope!\nSubscribe", "One horoscope a day keeps boredom away\nSubscribe!",
     "Hit like if you learned something new!", "Share this with a friend who loves horoscope!",
-    "Comment your favorite fact below!", "New horoscope every day \ndon’t miss out!\nSubscribe",
+    "Comment your favorite horoscope below!", "New horoscope every day \ndon’t miss out!\nSubscribe",
     "That’s it for today \nsee you tomorrow with another surprise!\nSubscribe",
     "This was just the beginning \nsubscribe for more!", "Fuel your brain daily \nhit that subscribe button!",
-    "A fact a day makes you wiser \nsubscribe now!", "Join our fact family \nhit subscribe!",
+    "A horoscope a day makes you wiser \nsubscribe now!", "Join our horoscope family \nhit subscribe!",
     "Want more mind-blowing horoscope? You know what to do!\nSubscribe", "Don’t miss a day \nturn on notifications!",
     "More horoscope, more fun \nsee you next time!", "The learning never stops \nsubscribe and stay curious!",
-    "Thanks for watching! Subscribe for tomorrow’s fact!", "Let’s make learning a habit \nsubscribe today!",
+    "Thanks for watching! Subscribe for tomorrow’s horoscope!", "Let’s make learning a habit \nsubscribe today!",
     "Knowledge is power \nsubscribe and get yours daily!",
     ]
 closing_text = random.choice(closing_texts)
@@ -80,7 +80,7 @@ youtube_horoscope_hashtags = random.sample(horoscope_hashtags, 10)
 disclaimer_copyright = (
     "\n\n📌Disclaimer & Copyright Notice\nAll horoscope and information presented in this video are intended "
     "for educational and informational purposes only. While every effort has been made to ensure "
-    "accuracy, we do not guarantee the completeness or reliability of any fact. Viewers are "
+    "accuracy, we do not guarantee the completeness or reliability of any horoscope. Viewers are "
     f"encouraged to verify content independently.\n\n📌Copyright © {current_year} John "
     "Mapunda\nAll rights reserved. This video and its contents, including audio, visuals, "
     "and branding, are the intellectual property of John Mapunda and may not be reproduced, "
@@ -276,7 +276,7 @@ local_path = "youtube_horoscope.mp4"
 thumbnail_path = "thumbnail.jpg"
 print("Uploading started...")
 
-video = VideoFileClip("youtube_facts.mp4")
+video = VideoFileClip("youtube_horoscope.mp4")
 thumbnail_time = 2  # second mark to grab the frame
 frame = video.get_frame(thumbnail_time)  # Numpy array
 video.close()
