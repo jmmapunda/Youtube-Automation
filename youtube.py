@@ -124,7 +124,7 @@ for sign in horoscope_signs:
 
 horoscope_data = [data_daily, data_weekly, data_monthly]
 
-horoscope_video = random.choice(range(1, 7))
+horoscope_video = random.choice(range(1, 10))
 video_time = 123
 
 video_to_use = VideoFileClip(f"static/assets/video/horoscope_{horoscope_video}.mp4")
@@ -191,7 +191,9 @@ txt_last = (
     .with_duration(3)
     .with_start(123))
 # Optional: add background audio
-audio = AudioFileClip("static/assets/audio/audio_1.mp3").subclipped(0, 20)
+horoscope_audio = random.choice(range(1, 6))
+
+audio = AudioFileClip(f"static/assets/audio/audio_{horoscope_audio}.mp3").subclipped(0, 20)
 repeats = int(video.duration // 20) + 1
 audio_looped = concatenate_audioclips([audio] * repeats).subclipped(0, video.duration)
 audio = CompositeAudioClip([audio_looped])
