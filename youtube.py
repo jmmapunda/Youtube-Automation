@@ -50,18 +50,27 @@ current_month = today.strftime('%B')
 horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
                    "Capricorn", "Aquarius", "Pisces"]
 closing_texts = [
-    "Subscribe for more daily horoscope!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
-    "Come back tomorrow for your next horoscope!\nSubscribe", "One horoscope a day keeps boredom away\nSubscribe!",
-    "Hit like if you learned something new!", "Share this with a friend who loves horoscope!",
-    "Comment your favorite horoscope below!", "New horoscope every day \ndon’t miss out!\nSubscribe",
-    "That’s it for today \nsee you tomorrow with another surprise!\nSubscribe",
-    "This was just the beginning \nsubscribe for more!", "Fuel your brain daily \nhit that subscribe button!",
-    "A horoscope a day makes you wiser \nsubscribe now!", "Join our horoscope family \nhit subscribe!",
-    "Want more mind-blowing horoscope? You know what to do!\nSubscribe", "Don’t miss a day \nturn on notifications!",
-    "More horoscope, more fun \nsee you next time!", "The learning never stops \nsubscribe and stay curious!",
-    "Thanks for watching! Subscribe for tomorrow’s horoscope!", "Let’s make learning a habit \nsubscribe today!",
-    "Knowledge is power \nsubscribe and get yours daily!",
+    "Thanks for watching! Come back tomorrow for your next horoscope 🌟",
+    "Enjoyed your reading? Subscribe for daily cosmic insights ✨",
+    "One horoscope a day keeps uncertainty away 🔮 Subscribe now!",
+    "The stars never sleep, and neither do we 🌙 Subscribe for more!",
+    "Tomorrow’s destiny awaits... don’t miss it 🔭 Subscribe!",
+    "Hit like if the stars spoke to you today ⭐",
+    "Know someone who loves astrology? Share this with them 🌌",
+    "Join our cosmic community — subscribe for daily horoscopes 💫",
+    "The universe has more in store for you… come back tomorrow 🌠",
+    "Feeling aligned? Make it a daily ritual 🔁 Subscribe now!",
+    "Let the stars guide you daily ✨ Hit that subscribe button!",
+    "Your next forecast is just a sunrise away ☀️ Don’t miss it!",
+    "More astrology, more insight 🔮 Subscribe and stay tuned!",
+    "Unlock the mysteries of the universe daily — subscribe now 🌌",
+    "Stay in sync with the cosmos 🪐 New horoscope every day!",
+    "Let your zodiac lead the way — subscribe for tomorrow’s reading!",
+    "Thanks for your energy today 💖 See you tomorrow under new stars!",
+    "Don’t miss a sign from the stars — turn on notifications 🔔",
+    "Your future self will thank you — subscribe for daily guidance 💫",
     ]
+
 closing_text = random.choice(closing_texts)
 
 horoscope_hashtags = [
@@ -154,12 +163,13 @@ else:
 
 
 # Text 1 at 0s to 3s
-txt_start = (TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily horoscope!",
-                      text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
-                      size=(text_width, None), method='caption', )
-             .with_position("center", 0.1)
-             .with_duration(3)
-             .with_start(0))
+txt_start = (
+    TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily horoscope!",
+             text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
+             size=(text_width, None), method='caption', )
+    .with_position("center", 0.1)
+    .with_duration(3)
+    .with_start(0))
 start_time = 3
 clips = []
 for horo_time_range in horoscope_data:
@@ -174,7 +184,8 @@ for horo_time_range in horoscope_data:
                 .with_start(start_time))
             horoscope_details['sn'] = (
                 TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
-                         text=f"{horoscope_details['horoscope']}", font_size=font_size, text_align='center', color='#C4EEF2',
+                         text=f"{horoscope_details['horoscope']}", font_size=font_size, text_align='center',
+                         color='#C4EEF2',
                          stroke_color="#BF0000", stroke_width=2, size=(text_width, None), method='caption', )
                 .with_position("center")
                 .with_duration(10)
