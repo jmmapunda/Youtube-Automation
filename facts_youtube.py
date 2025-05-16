@@ -101,7 +101,7 @@ txt3 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf"
         .with_start(8))
 
 txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
-                 text_align='center', color='#0D0D0D', stroke_color="#E50000", stroke_width=2, size=(text_width, None),
+                 text_align='center', color='#FFFFFF', stroke_color="#E50000", stroke_width=1, size=(text_width, None),
                  method='caption', )
         .with_position("center")
         .with_duration(3)
