@@ -62,6 +62,7 @@ hashtags = [
 facts_hashtags = random.sample(hashtags, 10)
 
 facts_video = random.choice(range(1, 8))
+print(f"Video used is facts_{facts_video}.mp4")
 video_time = 16
 
 video_to_use = VideoFileClip(f"static/assets/video/facts_{facts_video}.mp4")
@@ -106,7 +107,9 @@ txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf"
         .with_duration(3)
         .with_start(13))
 # Optional: add background audio
-facts_audio = random.choice(range(1, 6))
+facts_audio = random.choice(range(1, 5))
+print(f"Audio used is audio_{facts_audio}.mp3")
+
 
 audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(video.duration)
 
