@@ -11,14 +11,17 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 api_KEY_youtube = os.getenv('api_KEY_youtube')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+NINJA_API_KEY = os.getenv('NINJA_API_KEY')
+
 
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
 URL_2 = 'http://numbersapi.com/random/trivia'  # .text
+URL_3 = 'https://api.api-ninjas.com/v1/facts'  # .[0]['fact'] from API NINJA
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
@@ -36,7 +39,8 @@ disclaimer_copyright = (
 
 results = requests.get(URL).json()['text']
 results_2 = requests.get(URL_2).text
-facts_description = random.choice([results, results_2]) + disclaimer_copyright
+results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
+facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
 
 
 closing_texts = [
@@ -61,9 +65,10 @@ hashtags = [
     ]
 facts_hashtags = random.sample(hashtags, 10)
 
+# Video overlay start
 facts_video = random.choice(range(1, 8))
 print(f"Video used is facts_{facts_video}.mp4")
-video_time = 16
+video_time = 21
 
 video_to_use = VideoFileClip(f"static/assets/video/facts_{facts_video}.mp4")
 video_duration = video_to_use.duration
@@ -100,12 +105,20 @@ txt3 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf"
         .with_duration(5)
         .with_start(8))
 
-txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
+txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results_3}", font_size=100,
+                 text_align='center', color='#C4EEF2', stroke_color="#BF0000", stroke_width=2, size=(text_width, None),
+                 method='caption', )
+        .with_position("center")
+        .with_duration(5)
+        .with_start(13))
+
+txt5 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
                  text_align='center', color='#FFFFFF', stroke_color="#E50000", stroke_width=1, size=(text_width, None),
                  method='caption', )
         .with_position("center")
         .with_duration(3)
-        .with_start(13))
+        .with_start(18))
+
 # Optional: add background audio
 facts_audio = random.choice(range(1, 5))
 print(f"Audio used is audio_{facts_audio}.mp3")
@@ -113,11 +126,12 @@ print(f"Audio used is audio_{facts_audio}.mp3")
 
 audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(video.duration)
 
-final = CompositeVideoClip([video_final, txt1, txt2, txt3, txt4])
+final = CompositeVideoClip([video_final, txt1, txt2, txt3, txt4, txt5])
 final = final.with_audio(audio)
 
 final.write_videofile("youtube_facts.mp4", fps=24)
 
+# YouTube uploads start
 url_youtube = 'https://www.googleapis.com/youtube/v3'
 response = requests.get(url_youtube, api_KEY_youtube)
 print(response)
