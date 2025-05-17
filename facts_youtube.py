@@ -11,7 +11,7 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 api_KEY_youtube = os.getenv('api_KEY_youtube')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
