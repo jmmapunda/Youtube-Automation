@@ -17,8 +17,6 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 NINJA_API_KEY = os.getenv('NINJA_API_KEY')
-print(NINJA_API_KEY[:5])
-exit()
 
 
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']

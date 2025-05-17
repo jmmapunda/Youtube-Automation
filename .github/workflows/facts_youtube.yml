@@ -14,6 +14,7 @@ jobs:
       client_id_youtube: ${{ secrets.client_id_youtube }}
       client_secret_youtube: ${{ secrets.client_secret_youtube }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      NINJA_API_KEY: ${{ secrets.NINJA_API_KEY }}
 
     steps:
       - name: Check out repository
