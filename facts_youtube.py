@@ -68,7 +68,7 @@ facts_hashtags = random.sample(hashtags, 10)
 # Video overlay start
 facts_video = random.choice(range(1, 8))
 print(f"Video used is facts_{facts_video}.mp4")
-video_time = 21
+video_time = 18
 
 video_to_use = VideoFileClip(f"static/assets/video/facts_{facts_video}.mp4")
 video_duration = video_to_use.duration
@@ -83,12 +83,12 @@ video_final = video_resized.cropped(width=1080, x_center=video_resized.w / 2)
 text_width = 940  # 70px left and right padding
 
 # Text 1 at 0s to 3s
-txt1 = (TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily Facts!",
-                 text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
-                 size=(text_width, None), method='caption', )
-        .with_position("center", 0.1)
-        .with_duration(3)
-        .with_start(0))
+# txt1 = (TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily Facts!",
+#                  text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
+#                  size=(text_width, None), method='caption', )
+#         .with_position("center", 0.1)
+#         .with_duration(3)
+#         .with_start(0))
 
 # Text 2 at 3s to 6s
 txt2 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results}", font_size=100,
@@ -96,28 +96,28 @@ txt2 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf"
                  method='caption', )
         .with_position("center")
         .with_duration(5)
-        .with_start(3))
+        .with_start(0))
 
 txt3 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results_2}", font_size=100,
                  text_align='center', color='#C4EEF2', stroke_color="#BF0000", stroke_width=2, size=(text_width, None),
                  method='caption', )
         .with_position("center")
         .with_duration(5)
-        .with_start(8))
+        .with_start(5))
 
 txt4 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{results_3}", font_size=100,
                  text_align='center', color='#C4EEF2', stroke_color="#BF0000", stroke_width=2, size=(text_width, None),
                  method='caption', )
         .with_position("center")
         .with_duration(5)
-        .with_start(13))
+        .with_start(10))
 
 txt5 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
                  text_align='center', color='#FFFFFF', stroke_color="#E50000", stroke_width=1, size=(text_width, None),
                  method='caption', )
         .with_position("center")
         .with_duration(3)
-        .with_start(18))
+        .with_start(15))
 
 # Optional: add background audio
 facts_audio = random.choice(range(1, 5))
@@ -126,7 +126,7 @@ print(f"Audio used is audio_{facts_audio}.mp3")
 
 audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(video.duration)
 
-final = CompositeVideoClip([video_final, txt1, txt2, txt3, txt4, txt5])
+final = CompositeVideoClip([video_final, txt2, txt3, txt4, txt5])
 final = final.with_audio(audio)
 
 final.write_videofile("youtube_facts.mp4", fps=24)
