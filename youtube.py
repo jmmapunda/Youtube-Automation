@@ -101,7 +101,7 @@ horoscope_description = ("🌟 Welcome to Your Daily Dose of Cosmic Insight! �
                          "motivation, or a sign from the universe — we've got your back!\n\n✨ What to Expect in This "
                          "Video:\n✔️ Accurate daily, weekly, or monthly horoscopes\n✔️ Guidance for love, career, "
                          "health, and more\n✔️ Personalized astrology insights for every zodiac sign\n\n📅 Horoscope "
-                         "Date: {{Date automatically set}}\n\n🔔 Subscribe & Turn on Notifications to never miss your "
+                         f"Date: {today_date}\n\n🔔 Subscribe & Turn on Notifications to never miss your "
                          "daily insight!") + disclaimer_copyright
 
 data_daily = []
@@ -203,7 +203,7 @@ txt_last = (
     .with_duration(3)
     .with_start(123))
 # Optional: add background audio
-horoscope_audio = random.choice(range(1, 5))
+horoscope_audio = random.choice(range(1, 4))
 print(f"Audio used is audio_{horoscope_audio}.mp3")
 
 audio = AudioFileClip(f"static/assets/audio/audio_{horoscope_audio}.mp3").subclipped(0, 20)

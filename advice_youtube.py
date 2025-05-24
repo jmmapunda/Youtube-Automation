@@ -60,7 +60,7 @@ text = TextClip(text=f"{response.json()['advice']}", font_size=70, text_align="c
                 method="caption").with_duration(10).with_position(("center", 20))
 
 # Optional: add background audio
-facts_audio = random.choice(range(1, 5))
+facts_audio = random.choice(range(1, 4))
 print(f"Audio used is audio_{facts_audio}.mp3")
 
 

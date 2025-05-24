@@ -120,7 +120,7 @@ txt5 = (TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf"
         .with_start(15))
 
 # Optional: add background audio
-facts_audio = random.choice(range(1, 5))
+facts_audio = random.choice(range(1, 4))
 print(f"Audio used is audio_{facts_audio}.mp3")
 
 
