@@ -19,8 +19,7 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 AI_KEY = os.getenv('AI_KEY')
-print(AI_KEY[:7])
-exit()
+
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
 
