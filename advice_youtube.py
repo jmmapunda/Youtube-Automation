@@ -89,7 +89,7 @@ genai.configure(api_key=f"{AI_KEY}")
 model = genai.GenerativeModel("gemini-1.5-flash")
 response = model.generate_content(
     f"Create a YouTube title just one line based on this advice include emoji if possible '{today_advice}'")
-print(response.text)
+print(f'AI summary is: {response.text}')
 advice_title = response.text
 
 # Set YouTube upload scope
