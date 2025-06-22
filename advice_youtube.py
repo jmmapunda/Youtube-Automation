@@ -4,6 +4,7 @@ from datetime import datetime
 from moviepy import *
 import random
 import os
+import google.generativeai as genai
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -17,6 +18,8 @@ api_KEY_youtube = os.getenv('api_KEY_youtube')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+AI_KEY = os.getenv('AI_KEY')
+
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
@@ -25,7 +28,7 @@ hashtags = [
     "MangaAI", "AnimeArt", "AestheticAnime", "AIAnime", "AnimeVibes", "OtakuLife", "AnimeLovers", "MangaArt",
     "AnimeEdits", "AnimeOverlay", "AIArtworks", "DailyAdvice", "LifeTips", "AnimeQuotes", "InspoOverlay",
     "MotivationAnime", "AIGenerated", "Shorts", "YouTubeShorts", "AnimeShorts", "ArtInspo", "DigitalDreams",
-    "StayInspired", "OtakuQuotes", "VisualWisdom", "AIVisuals", "MangaMood", "ASMR", "YOUTUBE"
+    "StayInspired", "OtakuQuotes", "VisualWisdom", "AIVisuals", "MangaMood", "ASMR", "YOUTUBE", "Labubu"
     ]
 advice_hashtags = random.sample(hashtags, 10)
 
@@ -34,6 +37,8 @@ advice = 'https://api.api-ninjas.com/v1/advice'
 response = requests.get(advice, headers={'X-Api-Key': NINJA_API_KEY})
 if response.status_code == requests.codes.ok:
     print(response.json()['advice'])
+today_advice = response.json()['advice']
+print(today_advice)
 
 from moviepy import *
 
@@ -78,6 +83,14 @@ final.write_videofile("youtube_advice.mp4", fps=24)
 # print(response)
 
 
+
+genai.configure(api_key=f"{AI_KEY}")
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+response = model.generate_content(
+    f"Create a YouTube title just one line based on this advice include emoji if possible '{today_advice}'")
+print(response.text)
+advice_title = response.text
 
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
@@ -142,7 +155,7 @@ local_path = "youtube_advice.mp4"
 print("Uploading started...")
 
 try:
-    upload_video(file_path=local_path, title=f'Advice, Day {day_of_year}! #shorts', description="",
+    upload_video(file_path=local_path, title=f'{advice_title} #shorts', description="",
                  youtube_hashtags=advice_hashtags)
     print("Uploaded video successfully.")
 # except Exception as e:
