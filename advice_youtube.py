@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
+from twilio.rest import Client
 from dotenv import load_dotenv
 
 # load_dotenv()
@@ -19,6 +20,9 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 AI_KEY = os.getenv('AI_KEY')
+twilio_account_sid = os.getenv('twilio_account_sid')
+twilio_auth_token = os.getenv('twilio_auth_token')
+my_number = os.getenv('my_number')
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
@@ -167,3 +171,14 @@ finally:
         except Exception as cleanup_error:
             print(f"Failed to delete local video file: {cleanup_error}")
 
+
+# Send message to my whatsapp
+client = Client(twilio_account_sid, twilio_auth_token)
+
+message = client.messages.create(
+    from_='whatsapp:+14155238886',
+    body=f'Advice: {today_advice}\nAI Summary/Title: {advice_title}!',
+    to=f'whatsapp:{my_number}'
+    )
+
+print(message.sid)
