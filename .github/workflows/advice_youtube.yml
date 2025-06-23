@@ -18,6 +18,10 @@ jobs:
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
       NINJA_API_KEY: ${{ secrets.NINJA_API_KEY }}
       AI_KEY: ${{ secrets.AI_KEY }}
+      twilio_account_sid: ${{ secrets.twilio_account_sid }}
+      twilio_auth_token: ${{ secrets.twilio_auth_token }}
+      my_number: ${{ secrets.my_number }}
+
 
 
     steps:
