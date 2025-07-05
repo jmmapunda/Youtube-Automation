@@ -1,8 +1,10 @@
-name: Facts Youtube Daily @ 1300
+name: Facts Youtube 3x @ 1300(Mo,We&Fr)
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # 5:00 AM UTC daily
+    - cron: '0 10 * * 1'  # Monday
+    - cron: '0 10 * * 3'  # Wednesday
+    - cron: '0 10 * * 5'  # Friday
   workflow_dispatch:      # Manual trigger
 
 jobs:
