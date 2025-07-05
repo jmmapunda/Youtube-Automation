@@ -37,10 +37,28 @@ disclaimer_copyright = (
     "redistributed, or reused without express permission.\n\n\nVisit: https://johnmapunda.com for "
     "more content and resources.")
 
-results = requests.get(URL).json()['text']
-results_2 = requests.get(URL_2).text
-results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
-facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
+MAX_RETRIES = 5
+retry_delay = 30  # seconds
+
+for attempt in range(MAX_RETRIES):
+    try:
+        results = requests.get(URL).json()['text']
+        results_2 = requests.get(URL_2).text
+        results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
+        facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
+        break  # Success, so break out of retry loop
+    except Exception as e:
+        print(f"Attempt {attempt + 1} failed: {e}")
+        if attempt < MAX_RETRIES - 1:
+            time.sleep(retry_delay)
+        else:
+            facts_description = "Sorry, we couldn't fetch a fact at this time."
+
+# results = requests.get(URL).json()['text']
+# results_2 = requests.get(URL_2).text
+# results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
+# facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
+
 
 
 closing_texts = [
