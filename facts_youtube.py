@@ -46,7 +46,7 @@ for attempt in range(MAX_RETRIES):
         results_2 = requests.get(URL_2).text
         results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
         facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
-        print('✅ Fact fetched successfully.')
+        print('✅ Facts fetched successfully.')
         break  # Success, so break out of retry loop
     except Exception as e:
         print(f"Attempt {attempt + 1} failed: {e}")
