@@ -17,6 +17,8 @@ import cloudinary
 import cloudinary.api
 import time
 from dotenv import load_dotenv
+import google.generativeai as genai
+
 
 # load_dotenv()
 PEXELKEY = os.getenv('PEXELKEY')
@@ -27,6 +29,7 @@ api_KEY_youtube = os.getenv('api_KEY_youtube')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+AI_KEY = os.getenv('AI_KEY')
 
 # print("refresh_token:", YOUTUBE_REFRESH_TOKEN[:5] + "..." if YOUTUBE_REFRESH_TOKEN else "MISSING")
 # print("client_id:", client_id_youtube[:5] + "..." if client_id_youtube else "MISSING")
@@ -110,6 +113,66 @@ data_monthly = []
 
 
 
+#RANDOMIZATION COMPONENTS
+tones = ["mystical", "urgent", "romantic", "career-focused", "uplifting", "mysterious"]
+emojis = ["🔮", "✨", "🌟", "🌌", "♈♉♊", "🔥", "🌠", "🪐", "📅"]
+selected_tone = random.choice(tones)
+selected_emojis = random.sample(emojis, 2)
+
+#DATE INFO
+today_date = datetime.now().strftime('%B %d, %Y')
+# current_month = datetime.now().strftime('%B')
+current_week = datetime.now().isocalendar().week
+
+#VIDEO TYPE: 'daily', 'weekly', or 'monthly'
+if datetime.now().day == 1:
+    video_type = "monthly"  # ← set this dynamically based on logic
+elif datetime.now().weekday() == 0:
+    video_type = "weekly"  # ← set this dynamically based on logic
+else:
+    video_type = "daily"
+
+#Generate context based on video type
+if video_type == "daily":
+    base_title = f"Daily horoscope for {today_date}"
+    style_note = "short-term cosmic insights, fresh energy"
+elif video_type == "weekly":
+    base_title = f"Weekly horoscope for Week {current_week}, {today_date}"
+    style_note = "weekly zodiac forecast, opportunities & challenges"
+elif video_type == "monthly":
+    base_title = f"Monthly horoscope for {current_month} {datetime.now().year}"
+    style_note = "monthly guidance, deep astrology insights"
+
+prompt = f"""
+You're a YouTube SEO expert and creative title writer.
+Generate ONE highly engaging, click-worthy YouTube title (one line only) for a {video_type} horoscope video based on this:
+
+🪐 Content: "{base_title}"
+🎯 Style: {style_note}
+🎭 Tone: {selected_tone}
+🎉 Emojis: {' '.join(selected_emojis)}
+
+✅ Must be under 100 characters
+✅ Include SEO keywords like: 'horoscope', 'astrology', 'zodiac', '{video_type} prediction', etc.
+✅ Avoid repeating phrases from previous days/weeks/months
+✅ Add curiosity or urgency when appropriate
+
+Examples:
+- "This Week’s Astrology Forecast 🔮 What Awaits Your Sign? (Week {current_week})"
+- "August 2025 Horoscope 🌟 Monthly Insights for All Zodiac Signs"
+- "Today’s Horoscope Revealed ✨ What the Stars Say for {today_date}"
+
+Now generate the title:
+"""
+
+#Gemini API
+genai.configure(api_key=AI_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
+response = model.generate_content(prompt)
+youtube_title = response.text.strip()
+
+print(f"Generated {video_type.capitalize()} Title: {youtube_title}")
+
 for sign in horoscope_signs:
     horoscope_daily = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign={sign}&day=TODAY"
     horoscope_weekly = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/weekly?sign={sign}"
@@ -117,17 +180,17 @@ for sign in horoscope_signs:
     sn = 1
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
-        youtube_title = f'Month of {current_month} Horoscope - {today_date}'
+        # youtube_title = f'Month of {current_month} Horoscope - {today_date}'
         sn += 1
 
     elif datetime.now().weekday() == 0:
         horoscope(horoscope_weekly, data_weekly)
-        youtube_title = f"This Week's Horoscope - {today_date}"
+        # youtube_title = f"This Week's Horoscope - {today_date}"
         sn += 1
 
     else:
         horoscope(horoscope_daily, data_daily)
-        youtube_title = f"Today's {today_date} Horoscope"
+        # youtube_title = f"Today's {today_date} Horoscope"
         sn += 1
 
 
