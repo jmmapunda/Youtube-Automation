@@ -231,6 +231,14 @@ def delete_video(video_id):
 if today.day % 2 == 0:
     try:
         delete_video(f'{video_to_delete}')
+        response_delete = (
+            supabase.table("youtube_automation")
+            .delete()
+            .eq("video_id", video_to_delete)  # filter by video_id
+            .execute()
+        )
+
+        print(response_delete.data)
     except Exception as e:
         print(e)
 else:
