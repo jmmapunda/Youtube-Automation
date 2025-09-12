@@ -18,6 +18,11 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
 
+client_id_youtube = os.getenv('client_id_youtube')
+client_secret_youtube = os.getenv('client_secret_youtube')
+YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+YT_FORCE_RT = os.getenv('YT_FORCE_RT')
+
 # === SUPABASE SETUP === #
 print("🔌 Connecting to Supabase...")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
@@ -173,3 +178,60 @@ def export_to_sheet():
     print("📊 Data exported to Google Sheets")
 
 export_to_sheet()
+
+
+response_data = (
+    supabase.table("youtube_automation")
+    .select("*")
+    .execute()
+)
+# print(response_data)
+
+from datetime import datetime, timedelta
+
+# Define today and the 90-day cutoff
+today = datetime.today()
+ninety_days_ago = today - timedelta(days=90)
+
+filtered = []
+for to_delete in response_data.data:
+    if datetime.strptime(to_delete['upload_date'], "%Y-%m-%d") <= ninety_days_ago and to_delete['view_count'] == 0 and to_delete['like_count'] == 0 and to_delete['comment_count'] == 0:
+        filtered.append(to_delete)
+
+delete_this = []
+delete = sorted(filtered, key=lambda x: x['id'])[:1]
+for item in delete:
+    delete_this.append(item['video_id'])
+    print(item['id'])
+
+video_to_delete = delete_this[0]
+print(video_to_delete)
+
+def authenticate_youtube():
+    creds = Credentials(
+        token=None,
+        refresh_token=YT_FORCE_RT,
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=YTA_CLIENT_ID,
+        client_secret=YTA_CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/youtube.force-ssl"],
+        )
+    creds.refresh(Request())  # This fetches a new access token using the refresh token
+    youtube = build('youtube', 'v3', credentials=creds)
+    return youtube
+
+def delete_video(video_id):
+    youtube = authenticate_youtube()
+    try:
+        youtube.videos().delete(id=video_id).execute()
+        print(f"Deleted video: {video_id}")
+    except Exception as e:
+        print(f"Failed to delete video {video_id}: {e}")
+
+if today.day % 2 == 0:
+    try:
+        delete_video(f'{video_to_delete}')
+    except Exception as e:
+        print(e)
+else:
+    print("We are not Deleting video Today")
