@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 18 * * 2'  # 2100 Tuesday
     - cron: '0 20 * * 4'  # 2300 Thursday
-#    - cron: '0 14 * * 6'  # 1700 Saturday
+    - cron: '0 14 * * 6'  # 1700 Saturday
     - cron: '0 14 * * 0'  # 1700 Sunday
   workflow_dispatch:      # Manual trigger
 
