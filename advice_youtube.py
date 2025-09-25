@@ -89,7 +89,7 @@ final.write_videofile("youtube_advice.mp4", fps=24)
 
 genai.configure(api_key=f"{AI_KEY}")
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 response = model.generate_content(
     f"Create best SEO optimized YouTube title just one line based on this advice include emoji if possible '{today_advice}'")
 print(f'AI summary is: {response.text}')
