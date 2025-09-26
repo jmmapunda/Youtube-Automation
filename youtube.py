@@ -167,7 +167,7 @@ Now generate the title:
 
 #Gemini API
 genai.configure(api_key=AI_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 response = model.generate_content(prompt)
 youtube_title = response.text.strip()
 
