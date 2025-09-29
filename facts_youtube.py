@@ -84,7 +84,7 @@ def save_facts(facts):
     rows = [{"Fact": fact, "Source": source} for fact, source in facts]
     supabase.table("facts").insert(rows).execute()
     print(f"🆕 Inserted {len(rows)} facts into Supabase.")
-# save_facts(facts)
+save_facts(facts)
 allfacts = supabase.table('facts').select('Fact').execute()
 factsresults = allfacts.data
 randomfact = random.choice(factsresults)
