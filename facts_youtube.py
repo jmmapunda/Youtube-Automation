@@ -10,6 +10,8 @@ from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from dotenv import load_dotenv
+from supabase import create_client, Client
+
 
 # load_dotenv()
 api_KEY_youtube = os.getenv('api_KEY_youtube')
@@ -18,6 +20,11 @@ client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 NINJA_API_KEY = os.getenv('NINJA_API_KEY')
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+print("✅ Supabase connection established.")
 
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
 URL_2 = 'http://numbersapi.com/random/trivia'  # .text
@@ -37,23 +44,79 @@ disclaimer_copyright = (
     "redistributed, or reused without express permission.\n\n\nVisit: https://johnmapunda.com for "
     "more content and resources.")
 
-MAX_RETRIES = 5
-retry_delay = 30  # seconds
+MAX_RETRIES = 4
+retry_delay = 10  # seconds
+facts = []
 
 for attempt in range(MAX_RETRIES):
     try:
         results = requests.get(URL).json()['text']
-        results_2 = requests.get(URL_2).text
-        results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
-        facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
-        print('✅ Facts fetched successfully.')
-        break  # Success, so break out of retry loop
+        facts.append((results, 'Useless Facts'))
+
     except Exception as e:
+        results = None
         print(f"Attempt {attempt + 1} failed: {e}")
         if attempt < MAX_RETRIES - 1:
             time.sleep(retry_delay)
-        else:
-            facts_description = "Sorry, we couldn't fetch a fact at this time."
+    try:
+        results_2 = requests.get(URL_2).text
+        facts.append((results_2, 'Numbers API'))
+
+    except Exception as e:
+        results_2 = None
+        print(f"Attempt {attempt + 1} failed: {e}")
+        if attempt < MAX_RETRIES - 1:
+            time.sleep(retry_delay)
+    try:
+        results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
+        facts.append((results_3, 'Ninja API'))
+        #  + disclaimer_copyright
+          # Success, so break out of retry loop
+    except Exception as e:
+        results_3 = None
+        print(f"Attempt {attempt + 1} failed: {e}")
+        if attempt < MAX_RETRIES - 1:
+            time.sleep(retry_delay)
+        # else:
+        #     facts_description = "Sorry, we couldn't fetch a fact at this time."
+
+def save_facts(facts):
+    rows = [{"Fact": fact, "Source": source} for fact, source in facts]
+    supabase.table("facts").insert(rows).execute()
+    print(f"🆕 Inserted {len(rows)} facts into Supabase.")
+# save_facts(facts)
+allfacts = supabase.table('facts').select('Fact').execute()
+factsresults = allfacts.data
+randomfact = random.choice(factsresults)
+# print(randomfact['Fact'])
+if results is None:
+    results = randomfact['Fact']
+if results_2 is None:
+    results_2 = randomfact['Fact']
+if results_3 is None:
+    results_3 = randomfact['Fact']
+
+print(f'Results 1: {results}')
+print(f'Results 2: {results_2}')
+print(f'Results 3:{results_3}')
+facts_description = random.choice([results, results_2, results_3])
+
+def save_fact(fact_text, source):
+
+    print("💾 Saving fact...")
+
+    # Check if fact already exists
+    existing = supabase.table("facts").select("fact").eq("fact", fact_text).execute()
+
+    if existing.data:
+        print("⚠️ Fact already exists, skipping insert.")
+    else:
+        supabase.table("facts").insert({
+            "fact": fact_text,
+            "source": source
+        }).execute()
+        print(f"🆕 Fact inserted from {source}.")
+
 
 # results = requests.get(URL).json()['text']
 # results_2 = requests.get(URL_2).text
