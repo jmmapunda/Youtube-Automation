@@ -84,7 +84,7 @@ def save_facts(facts):
     rows = [{"Fact": fact, "Source": source} for fact, source in facts]
     supabase.table("facts").insert(rows).execute()
     print(f"🆕 Inserted {len(rows)} facts into Supabase.")
-save_facts(facts)
+
 allfacts = supabase.table('facts').select('Fact').execute()
 factsresults = allfacts.data
 randomfact = random.choice(factsresults)
@@ -96,34 +96,12 @@ if results_2 is None:
 if results_3 is None:
     results_3 = randomfact['Fact']
 
+save_facts(facts)
+
 print(f'Results 1: {results}')
 print(f'Results 2: {results_2}')
 print(f'Results 3:{results_3}')
 facts_description = random.choice([results, results_2, results_3])
-
-def save_fact(fact_text, source):
-
-    print("💾 Saving fact...")
-
-    # Check if fact already exists
-    existing = supabase.table("facts").select("fact").eq("fact", fact_text).execute()
-
-    if existing.data:
-        print("⚠️ Fact already exists, skipping insert.")
-    else:
-        supabase.table("facts").insert({
-            "fact": fact_text,
-            "source": source
-        }).execute()
-        print(f"🆕 Fact inserted from {source}.")
-
-
-# results = requests.get(URL).json()['text']
-# results_2 = requests.get(URL_2).text
-# results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
-# facts_description = random.choice([results, results_2, results_3]) + disclaimer_copyright
-
-
 
 closing_texts = [
     "Subscribe for more daily facts!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
