@@ -11,6 +11,8 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import google.generativeai as genai
+
 
 
 # load_dotenv()
@@ -19,6 +21,8 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 NINJA_API_KEY = os.getenv('NINJA_API_KEY')
+
+AI_KEY = os.getenv('AI_KEY')
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
@@ -102,6 +106,14 @@ print(f'Results 1: {results}')
 print(f'Results 2: {results_2}')
 print(f'Results 3:{results_3}')
 facts_description = random.choice([results, results_2, results_3])
+today_facts = f"'{results}', '{results_2}', '{results_3}'"
+genai.configure(api_key=f"{AI_KEY}")
+
+model = genai.GenerativeModel("gemini-2.5-flash")
+response = model.generate_content(
+    f"Create best SEO optimized YouTube title just one line based on these facts '{today_facts}'")
+print(f'AI summary is: {response.text}')
+facts_title = response.text
 
 closing_texts = [
     "Subscribe for more daily facts!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",
@@ -261,7 +273,7 @@ local_path = "youtube_facts.mp4"
 print("Uploading started...")
 
 try:
-    upload_video(file_path=local_path, title=f'Day {day_of_year} Daily Facts!', description=facts_description,
+    upload_video(file_path=local_path, title=facts_title, description=facts_description,
                  youtube_hashtags=facts_hashtags)
     print("Uploaded video successfully.")
 # except Exception as e:
