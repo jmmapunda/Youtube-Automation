@@ -91,7 +91,7 @@ genai.configure(api_key=f"{AI_KEY}")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 response = model.generate_content(
-    f"Create best SEO optimized YouTube title just one line based on this advice include emoji if possible '{today_advice}'")
+    f"Create best SEO optimized YouTube title just one line based on this advice don't include emoji and avoid ** if possible '{today_advice}'")
 print(f'AI summary is: {response.text}')
 advice_title = response.text
 
