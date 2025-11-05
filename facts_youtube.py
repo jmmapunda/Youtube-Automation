@@ -48,7 +48,7 @@ disclaimer_copyright = (
     "redistributed, or reused without express permission.\n\n\nVisit: https://johnmapunda.com for "
     "more content and resources.")
 
-MAX_RETRIES = 4
+MAX_RETRIES = 1
 retry_delay = 10  # seconds
 facts = []
 
@@ -111,7 +111,14 @@ genai.configure(api_key=f"{AI_KEY}")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 response = model.generate_content(
-    f"Create best SEO optimized YouTube title just one line based on these facts '{today_facts}'")
+    f'Create one catchy, SEO-optimized YouTube title (max 80 characters) for a facts video based on these facts: {today_facts}.'
+    f'The title should: '
+    f'Be exciting, curiosity-driven, and natural (not clickbait).'
+    f'Include relevant keywords like “Amazing Facts”, “Did You Know”, “Unbelievable”, “Mind-Blowing”, etc.'
+    f'Combine or summarize the three facts into one engaging idea.'
+    f'Be written in title case (each major word capitalized).'
+    f'Output only the final title.')
+
 print(f'AI summary is: {response.text}')
 facts_title = response.text
 
