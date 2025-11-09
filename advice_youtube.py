@@ -90,11 +90,20 @@ final.write_videofile("youtube_advice.mp4", fps=24)
 genai.configure(api_key=f"{AI_KEY}")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
-response = model.generate_content(
-    f"Create best SEO optimized YouTube title just one line based on this advice don't include emoji and avoid ** if possible '{today_advice}'")
-print(f'AI summary is: {response.text}')
-advice_title = response.text
 
+for i in range(10):
+    print(f"Attempt: {i + 1}")
+    response = model.generate_content(
+        f"Generate one engaging, SEO-friendly YouTube title based on this advice: '{today_advice}'. Keep it under 60 characters, natural, and avoid emojis or symbols. Return only the title text, nothing else.")
+
+    if len(response.text) < 80:
+        print(f'AI summary is: {response.text}')
+        break
+    else:
+        print(f"Failed: {len(response.text)} - {response.text}")
+
+advice_title = response.text
+print(advice_title)
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
