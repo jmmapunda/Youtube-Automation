@@ -12,6 +12,7 @@ from google.auth.transport.requests import Request
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import google.generativeai as genai
+import pandas as pd
 
 
 
@@ -292,3 +293,27 @@ finally:
             print("Cleaned up local video file.")
         except Exception as cleanup_error:
             print(f"Failed to delete local video file: {cleanup_error}")
+
+
+
+
+
+day_to_delete_duplicates = datetime.now().day
+if day_to_delete_duplicates == 1:
+    all_facts = supabase.table('facts').select('*').execute()
+
+    df = pd.DataFrame(all_facts.data)
+    duplicates = df[df.duplicated(subset=['Fact'], keep="first")]
+    duplicates_list = duplicates['id'].to_list()
+    print(duplicates_list)
+
+    try:
+        if duplicates_list:
+            supabase.table('facts').delete().in_(column='id', values=duplicates_list).execute()
+            print(f'Deleted {len(duplicates_list)} duplicates.')
+        else:
+            print('No Data to Delete.')
+    except Exception as e:
+        print('Error Deleting Duplicates', e)
+else:
+    print('Not day Uno, so not deleting duplicates.')
