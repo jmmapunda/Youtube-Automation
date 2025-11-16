@@ -266,7 +266,7 @@ txt_last = (
     .with_duration(3)
     .with_start(123))
 # Optional: add background audio
-horoscope_audio = random.choice(range(1, 4))
+horoscope_audio = random.choice(range(2, 4))
 print(f"Audio used is audio_{horoscope_audio}.mp3")
 
 audio = AudioFileClip(f"static/assets/audio/audio_{horoscope_audio}.mp3").subclipped(0, 20)
