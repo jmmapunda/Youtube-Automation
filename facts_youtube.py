@@ -297,15 +297,15 @@ finally:
 
 
 
+all_facts = supabase.table('facts').select('*').execute()
+
+df = pd.DataFrame(all_facts.data)
+duplicates = df[df.duplicated(subset=['Fact'], keep="first")]
+duplicates_list = duplicates['id'].to_list()
+print(duplicates_list)
 
 day_to_delete_duplicates = datetime.now().day
 if day_to_delete_duplicates == 1:
-    all_facts = supabase.table('facts').select('*').execute()
-
-    df = pd.DataFrame(all_facts.data)
-    duplicates = df[df.duplicated(subset=['Fact'], keep="first")]
-    duplicates_list = duplicates['id'].to_list()
-    print(duplicates_list)
 
     try:
         if duplicates_list:
@@ -316,4 +316,4 @@ if day_to_delete_duplicates == 1:
     except Exception as e:
         print('Error Deleting Duplicates', e)
 else:
-    print('Not day Uno, so not deleting duplicates.')
+    print('Not day Uno, so we are not deleting duplicates.')
