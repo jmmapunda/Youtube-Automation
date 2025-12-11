@@ -184,10 +184,13 @@ finally:
 # Send message to my whatsapp
 client = Client(twilio_account_sid, twilio_auth_token)
 
-message = client.messages.create(
-    from_='whatsapp:+14155238886',
-    body=f'Advice: {today_advice}\nAI Summary/Title: {advice_title}!',
-    to=f'whatsapp:{my_number}'
-    )
+try:
+    message = client.messages.create(
+        from_='whatsapp:+14155238886',
+        body=f'Advice: {today_advice}\nAI Summary/Title: {advice_title}!',
+        to=f'whatsapp:{my_number}'
+        )
+except Exception as whatsapp:
+    print(f'Failed to send to Whatsapp error: {whatsapp}')
 
 print(message.sid)
