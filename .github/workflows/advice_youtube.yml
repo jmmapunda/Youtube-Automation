@@ -1,4 +1,4 @@
-name: Advice Youtube 4x @ 21Tu,23Th,17Sa&17Su
+name: Advice Youtube 4x @ 21Tu,23Th,17Sa&17Su-08mo,16we,13fr
 
 on:
   schedule:
@@ -6,6 +6,11 @@ on:
     - cron: '0 20 * * 4'  # 2300 Thursday
     - cron: '0 14 * * 6'  # 1700 Saturday
     - cron: '0 14 * * 0'  # 1700 Sunday
+    - cron: '0 05 * * 1'  # 0800 monday
+    - cron: '0 13 * * 3'  # 1600 Wendnesday
+    - cron: '0 10 * * 5'  # 1300 Friday
+
+
   workflow_dispatch:      # Manual trigger
 
 jobs:

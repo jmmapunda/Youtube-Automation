@@ -52,12 +52,13 @@ text_height = 70 * lines
 # Create black background clip (1080x1920)
 background = ColorClip(size=(1080, 1920), color=(0, 0, 0), duration=10)
 
-advice_image = random.choice(range(1, 18))
+advice_image = random.choice(range(1, 25))
 print(f"Image used is anime_{advice_image}.jpg")
 
 
 # Load and resize the image to fit bottom 1720 height
-image = (ImageClip(f"static/assets/pictures/anime_{advice_image}.jpg").resized(height=1920 - text_height)
+image = (ImageClip(f"https://johnmapunda.com/static/assets/image/chrismass/chrismass_{advice_image}.jpg").resized(height=1920 - text_height)
+# image = (ImageClip(f"static/assets/pictures/anime_{advice_image}.jpg").resized(height=1920 - text_height)
          .with_position(("center", "bottom"))
          .with_duration(10))
 # image = image.cropped(height=1720)  # Force height to 1720 if needed
