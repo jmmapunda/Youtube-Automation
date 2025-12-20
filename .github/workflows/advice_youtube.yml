@@ -10,7 +10,6 @@ on:
     - cron: '0 13 * * 3'  # 1600 Wendnesday
     - cron: '0 10 * * 5'  # 1300 Friday
 
-
   workflow_dispatch:      # Manual trigger
 
 jobs:
