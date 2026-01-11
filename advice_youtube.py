@@ -28,15 +28,6 @@ my_number = os.getenv('my_number')
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
 
-hashtags = [
-    "MangaAI", "AnimeArt", "AestheticAnime", "AIAnime", "AnimeVibes", "OtakuLife", "AnimeLovers", "MangaArt",
-    "AnimeEdits", "AnimeOverlay", "AIArtworks", "DailyAdvice", "LifeTips", "AnimeQuotes", "InspoOverlay",
-    "MotivationAnime", "AIGenerated", "Shorts", "YouTubeShorts", "AnimeShorts", "ArtInspo", "DigitalDreams",
-    "StayInspired", "OtakuQuotes", "VisualWisdom", "AIVisuals", "MangaMood", "ASMR", "YOUTUBE", "Labubu"
-    ]
-advice_hashtags = random.sample(hashtags, 10)
-
-
 advice = 'https://api.api-ninjas.com/v1/advice'
 response = requests.get(advice, headers={'X-Api-Key': NINJA_API_KEY})
 if response.status_code == requests.codes.ok:
@@ -66,12 +57,6 @@ else:
              .with_position(("center", "bottom"))
              .with_duration(10))
 
-# Load and resize the image to fit bottom 1720 height
-# image = (ImageClip(f"static/assets/pictures/anime_{advice_image}.jpg").resized(height=1920 - text_height)
-#          .with_position(("center", "bottom"))
-#          .with_duration(10))
-# image = image.cropped(height=1720)  # Force height to 1720 if needed
-
 # Create a text clip
 text = TextClip(text=f"{response.json()['advice']}", font_size=70, text_align="center",
                 font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", color="white", size=(940, text_height),
@@ -82,12 +67,12 @@ tts = gTTS(f'{today_advice}', lang="en", slow=False)
 tts.save("advice_audio.mp3")
 
 facts_audio = random.choice(range(1, 4))
-print(f"Audio used is audio_{facts_audio}.mp3")
 
 try:
     audio = AudioFileClip(f'advice_audio.mp3')
 except Exception as e:
     audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(10)
+    print(f"Audio used is audio_{facts_audio}.mp3")
     print(e)
 
 # Composite final video
@@ -96,13 +81,6 @@ final = final.with_audio(audio)
 # Export the video
 final.write_videofile("youtube_advice.mp4", fps=24)
 
-# YouTube uploads start
-# url_youtube = 'https://www.googleapis.com/youtube/v3'
-# response = requests.get(url_youtube, api_KEY_youtube)
-# print(response)
-
-
-
 genai.configure(api_key=f"{AI_KEY}")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
@@ -110,7 +88,14 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 for i in range(10):
     print(f"Attempt: {i + 1}")
     response = model.generate_content(
-        f"Generate one engaging, SEO-friendly YouTube title based on this advice: '{today_advice}'. Keep it under 60 characters, natural, and avoid emojis or symbols. Return only the title text, nothing else.")
+        f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
+        f'- The title MUST be 80 characters or fewer'
+        f'- Natural, engaging, SEO-friendly, click-worthy'
+        f'- Include 1–2 relevant hashtags at the end'
+        f'- NO emojis, NO symbols'
+        f'- Return ONLY the title text'
+        f'- Do NOT add explanations, quotes, options, or extra words'
+        )
 
     if len(response.text) < 80:
         print(f'AI summary is: {response.text}')
@@ -122,20 +107,6 @@ advice_title = response.text
 print(advice_title)
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-
-# Authenticate and get credentials
-# def authenticate_youtube():
-#     creds = None
-#     if os.path.exists("token.pickle"):
-#         with open("token.pickle", "rb") as token:
-#             creds = pickle.load(token)
-#     if not creds:
-#         flow = InstalledAppFlow.from_client_secrets_file("client_secret_youtube.json", SCOPES)
-#         creds = flow.run_local_server(port=0)
-#         with open("token.pickle", "wb") as token:
-#             pickle.dump(creds, token)
-#     youtube = build('youtube', 'v3', credentials=creds)
-#     return youtube
 
 def authenticate_youtube():
     creds = Credentials(
@@ -183,14 +154,13 @@ local_path = "youtube_advice.mp4"
 print("Uploading started...")
 
 try:
-    upload_video(file_path=local_path, title=f'{advice_title} #shorts', description="",
-                 youtube_hashtags=advice_hashtags)
-    print("Uploaded video successfully.")
-# except Exception as e:
-#     print(f"Failed to upload video: {e}")
+    upload_video(file_path=local_path, title=f'{advice_title} #shorts', description="", youtube_hashtags="")
+except Exception as e:
+    print(f"Failed to upload video: {e}")
 finally:
     if os.path.exists(local_path):
         try:
+            time.sleep(20)
             os.remove(local_path)
             print("Cleaned up local video file.")
         except Exception as cleanup_error:
