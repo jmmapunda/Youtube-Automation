@@ -12,6 +12,7 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from twilio.rest import Client
 from dotenv import load_dotenv
+from gtts import gTTS
 
 # load_dotenv()
 NINJA_API_KEY = os.getenv('NINJA_API_KEY')
@@ -77,11 +78,17 @@ text = TextClip(text=f"{response.json()['advice']}", font_size=70, text_align="c
                 method="caption").with_duration(10).with_position(("center", 20))
 
 # Optional: add background audio
+tts = gTTS(f'{today_advice}', lang="en", slow=False)
+tts.save("advice_audio.mp3")
+
 facts_audio = random.choice(range(1, 4))
 print(f"Audio used is audio_{facts_audio}.mp3")
 
-
-audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(10)
+try:
+    audio = AudioFileClip(f'advice_audio.mp3')
+except Exception as e:
+    audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(10)
+    print(e)
 
 # Composite final video
 final = CompositeVideoClip([background, image, text])
