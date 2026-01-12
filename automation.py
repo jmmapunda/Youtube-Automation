@@ -96,5 +96,8 @@ class YouTube:
             print('No Thumbnail or it Failed to add', e)
 
         # Cleanup local file
-        os.remove(file_path)
-        print("🧹 Local file deleted.")
+        try:
+            os.remove(file_path)
+            print("Local file deleted.")
+        except Exception as e:
+            print('Failed to remove', e)
