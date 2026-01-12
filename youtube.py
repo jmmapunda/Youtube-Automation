@@ -1,39 +1,21 @@
 import requests
 import random
+from dotenv import load_dotenv
 from moviepy import *
 from datetime import datetime
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google.oauth2.credentials import Credentials
-from google.auth.transport.requests import Request
 import os
-import pickle
-import cloudinary.uploader
-from cloudinary.utils import cloudinary_url
-from cloudinary import CloudinaryVideo
-from urllib.request import urlretrieve
-import cloudinary
-import cloudinary.api
 import time
-from dotenv import load_dotenv
 import google.generativeai as genai
+from automation import YouTube
 
-
+start_time = time.time()
 # load_dotenv()
 PEXELKEY = os.getenv('PEXELKEY')
 cloudname = os.getenv('cloudname')
 APIKEY = os.getenv('APIKEY')
 APISECRET = os.getenv('APISECRET')
 api_KEY_youtube = os.getenv('api_KEY_youtube')
-client_id_youtube = os.getenv('client_id_youtube')
-client_secret_youtube = os.getenv('client_secret_youtube')
-YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 AI_KEY = os.getenv('AI_KEY')
-
-# print("refresh_token:", YOUTUBE_REFRESH_TOKEN[:5] + "..." if YOUTUBE_REFRESH_TOKEN else "MISSING")
-# print("client_id:", client_id_youtube[:5] + "..." if client_id_youtube else "MISSING")
-# print("client_secret:", client_secret_youtube[:5] + "..." if client_secret_youtube else "MISSING")
 
 def horoscope(time, data, sn=1):
     response = requests.get(time).json()
@@ -76,41 +58,9 @@ closing_texts = [
 
 closing_text = random.choice(closing_texts)
 
-horoscope_hashtags = [
-    "Horoscope", "Astrology", "ZodiacSigns", "DailyHoroscope", "WeeklyHoroscope",
-    "MonthlyHoroscope", "ZodiacReading", "AstrologyUpdate", "AstrologyForecast", "TarotAndAstrology",
-    "AriesHoroscope", "TaurusHoroscope", "GeminiHoroscope", "CancerHoroscope",
-    "LeoHoroscope", "VirgoHoroscope", "LibraHoroscope", "ScorpioHoroscope",
-    "SagittariusHoroscope", "CapricornHoroscope", "AquariusHoroscope", "PiscesHoroscope",
-    "ZodiacVibes", "DailyZodiac", "SpiritualGuidance", "Manifestation", "EnergyReading",
-    "TodayInAstrology", "WhatTheStarsSay", "CelestialVibes", "AstroShorts", "ZodiacTalk",
-    "UniverseMessages", "CosmicEnergy", "StarSigns", "ZodiacDaily", "AstroInsights",
-    "SpiritualVibes", "MoonSigns", "PlanetaryInfluence", "MysticMessages", "AstroLife"
-]
-youtube_horoscope_hashtags = random.sample(horoscope_hashtags, 10)
-
-disclaimer_copyright = (
-    "\n\n📌Disclaimer & Copyright Notice\nAll horoscope and information presented in this video are intended "
-    "for educational and informational purposes only. While every effort has been made to ensure "
-    "accuracy, we do not guarantee the completeness or reliability of any horoscope. Viewers are "
-    f"encouraged to verify content independently.\n\n📌Copyright © {current_year} John "
-    "Mapunda\nAll rights reserved. This video and its contents, including audio, visuals, "
-    "and branding, are the intellectual property of John Mapunda and may not be reproduced, "
-    "redistributed, or reused without express permission.\n\n\nVisit:🌐 https://johnmapunda.com for "
-    "more content and resources.")
-
-horoscope_description = ("🌟 Welcome to Your Daily Dose of Cosmic Insight! 🌟\n\nUnlock the mysteries of the stars "
-                         "with today’s horoscope readings for all zodiac signs. Whether you're looking for clarity, "
-                         "motivation, or a sign from the universe — we've got your back!\n\n✨ What to Expect in This "
-                         "Video:\n✔️ Accurate daily, weekly, or monthly horoscopes\n✔️ Guidance for love, career, "
-                         "health, and more\n✔️ Personalized astrology insights for every zodiac sign\n\n📅 Horoscope "
-                         f"Date: {today_date}\n\n🔔 Subscribe & Turn on Notifications to never miss your "
-                         "daily insight!") + disclaimer_copyright
-
 data_daily = []
 data_weekly = []
 data_monthly = []
-
 
 
 #RANDOMIZATION COMPONENTS
@@ -121,7 +71,6 @@ selected_emojis = random.sample(emojis, 2)
 
 #DATE INFO
 today_date = datetime.now().strftime('%B %d, %Y')
-# current_month = datetime.now().strftime('%B')
 current_week = datetime.now().isocalendar().week
 
 #VIDEO TYPE: 'daily', 'weekly', or 'monthly'
@@ -152,15 +101,16 @@ Generate ONE highly engaging, click-worthy YouTube title (one line only) for a {
 🎭 Tone: {selected_tone}
 🎉 Emojis: {' '.join(selected_emojis)}
 
-✅ Must be under 100 characters
-✅ Include SEO keywords like: 'horoscope', 'astrology', 'zodiac', '{video_type} prediction', etc.
-✅ Avoid repeating phrases from previous days/weeks/months
-✅ Add curiosity or urgency when appropriate
+- Must be under 100 characters
+- Include SEO keywords like: 'horoscope', 'astrology', 'zodiac', '{video_type} prediction', etc.
+- Avoid repeating phrases from previous days/weeks/months
+- Add curiosity or urgency when appropriate
+- Must contain two hashtags
 
 Examples:
-- "This Week’s Astrology Forecast 🔮 What Awaits Your Sign? (Week {current_week})"
-- "August 2025 Horoscope 🌟 Monthly Insights for All Zodiac Signs"
-- "Today’s Horoscope Revealed ✨ What the Stars Say for {today_date}"
+- "This Week’s Astrology Forecast 🔮 What Awaits Your Sign? (Week {current_week}) #VirgoHoroscope #LibraHoroscope"
+- "August 2025 Horoscope 🌟 Monthly Insights for All Zodiac Signs #ZodiacReading #AstrologyUpdate"
+- "Today’s Horoscope Revealed ✨ What the Stars Say for {today_date} #Horoscope #Astrology"
 
 Now generate the title:
 """
@@ -180,21 +130,39 @@ for sign in horoscope_signs:
     sn = 1
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
-        # youtube_title = f'Month of {current_month} Horoscope - {today_date}'
         sn += 1
 
     elif datetime.now().weekday() == 0:
         horoscope(horoscope_weekly, data_weekly)
-        # youtube_title = f"This Week's Horoscope - {today_date}"
         sn += 1
 
     else:
         horoscope(horoscope_daily, data_daily)
-        # youtube_title = f"Today's {today_date} Horoscope"
         sn += 1
 
 
 horoscope_data = [data_daily, data_weekly, data_monthly]
+
+
+prompt_youtube_description = f"""
+Write a YouTube video description for a horoscope video. 
+
+Requirements:
+1. Include a short summary of all horoscope signs using the provided {horoscope_data}.
+2. Make it short, clear, and easy to read (max 5000 characters).
+3. Include strong keywords and clickbait phrases like "must watch," "today's horoscope," "life-changing predictions," "your future revealed."
+4. Add relevant hashtags like #horoscope, #astrology, #dailyhoroscope, #zodiac, #horoscopesigns.
+5. Do NOT use emojis or symbols.
+6. Write in a friendly, engaging style that encourages viewers to watch the video.
+
+Here is the horoscope data: {horoscope_data}
+
+Generate the description only.
+"""
+
+response = model.generate_content(prompt_youtube_description)
+horoscope_description = response.text.strip()
+print(f'Generated description: {horoscope_description}')
 
 horoscope_video = random.choice(range(1, 10))
 print(f"Video used is horoscope_{horoscope_video}.mp4")
@@ -283,73 +251,10 @@ url_youtube = 'https://www.googleapis.com/youtube/v3'
 response = requests.get(url_youtube, api_KEY_youtube)
 print(response)
 
-
-
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
-# Authenticate and get credentials
-# def authenticate_youtube():
-#     creds = None
-#     if os.path.exists("token.pickle"):
-#         with open("token.pickle", "rb") as token:
-#             creds = pickle.load(token)
-#     if not creds:
-#         flow = InstalledAppFlow.from_client_secrets_file("client_secret_youtube.json", SCOPES)
-#         creds = flow.run_local_server(port=0)
-#         with open("token.pickle", "wb") as token:
-#             pickle.dump(creds, token)
-#     youtube = build('youtube', 'v3', credentials=creds)
-#     return youtube
-
-def authenticate_youtube():
-    creds = Credentials(
-        token=None,
-        refresh_token=YOUTUBE_REFRESH_TOKEN,
-        token_uri='https://oauth2.googleapis.com/token',
-        client_id=client_id_youtube,
-        client_secret=client_secret_youtube,
-        scopes=["https://www.googleapis.com/auth/youtube.upload"],
-        )
-    creds.refresh(Request())  # This fetches a new access token using the refresh token
-    youtube = build('youtube', 'v3', credentials=creds)
-    return youtube
-
-# Upload to YouTube
-def upload_video(file_path, title, thumbnail, description, youtube_hashtags):
-    youtube = authenticate_youtube()
-    body = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": youtube_hashtags,
-            "categoryId": "22"
-            },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False
-            }
-        }
-    media = MediaFileUpload(file_path, resumable=True)
-    request = youtube.videos().insert(
-        part="snippet,status",
-        body=body,
-        media_body=media
-        )
-    response = request.execute()
-    video_id = response['id']
-    print(f"✅ Video uploaded: https://www.youtube.com/watch?v={video_id}")
-    thumbnail_request = youtube.thumbnails().set(
-        videoId=video_id,
-        media_body=thumbnail
-        )
-    thumbnail_response = thumbnail_request.execute()
-
-    # Cleanup local file
-    os.remove(file_path)
-    print("🧹 Local file deleted.")
-
-# ✅ Upload final video to YouTube
+# Upload final video to YouTube
 local_path = "youtube_horoscope.mp4"
 thumbnail_path = "thumbnail.jpg"
 print("Uploading started...")
@@ -367,11 +272,17 @@ thumbnail_img.save(thumbnail_path)
 
 
 try:
-    upload_video(file_path=local_path, thumbnail=thumbnail_path, title=youtube_title, description=horoscope_description,
-                 youtube_hashtags=youtube_horoscope_hashtags)
+    YouTube.upload_video(
+        file_path=local_path,
+        thumbnail=thumbnail_path,
+        title=youtube_title,
+        description=horoscope_description,
+        youtube_hashtags=''
+        )
+
     print("Uploaded video successfully.")
-# except Exception as e:
-#     print(f"Failed to upload video: {e}")
+except Exception as e:
+    print(f"Failed to upload video: {e}")
 finally:
     if os.path.exists(local_path):
         try:
@@ -380,3 +291,6 @@ finally:
             print("Cleaned up local video file.")
         except Exception as cleanup_error:
             print(f"Failed to delete local video file: {cleanup_error}")
+
+finish_time = time.time()
+print(f"Finished in {round(finish_time - start_time, 2)} seconds.")

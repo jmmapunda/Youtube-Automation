@@ -5,21 +5,15 @@ from moviepy import *
 import random
 import os
 import google.generativeai as genai
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google.oauth2.credentials import Credentials
-from google.auth.transport.requests import Request
 from twilio.rest import Client
 from dotenv import load_dotenv
 from gtts import gTTS
+from automation import YouTube, TextToSpeech
 
+start_time = time.time()
 # load_dotenv()
 NINJA_API_KEY = os.getenv('NINJA_API_KEY')
 api_KEY_youtube = os.getenv('api_KEY_youtube')
-client_id_youtube = os.getenv('client_id_youtube')
-client_secret_youtube = os.getenv('client_secret_youtube')
-YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 AI_KEY = os.getenv('AI_KEY')
 twilio_account_sid = os.getenv('twilio_account_sid')
 twilio_auth_token = os.getenv('twilio_auth_token')
@@ -69,11 +63,20 @@ tts.save("advice_audio.mp3")
 facts_audio = random.choice(range(1, 4))
 
 try:
+    google_tts = TextToSpeech(text=today_advice)
+    google_tts.google_tts()
     audio = AudioFileClip(f'advice_audio.mp3')
 except Exception as e:
-    audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(10)
-    print(f"Audio used is audio_{facts_audio}.mp3")
-    print(e)
+    print('Google TTS Failed', e)
+    try:
+        gtts_audio = TextToSpeech(text=today_advice)
+        gtts_audio.gtts()
+        audio = AudioFileClip(f'advice_audio.mp3')
+    except Exception as e:
+        print('gTTS Failed', e)
+        audio = AudioFileClip(f"static/assets/audio/audio_{facts_audio}.mp3").with_duration(10)
+        print(f"Audio used is audio_{facts_audio}.mp3")
+
 
 # Composite final video
 final = CompositeVideoClip([background, image, text])
@@ -86,7 +89,7 @@ genai.configure(api_key=f"{AI_KEY}")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 for i in range(10):
-    print(f"Attempt: {i + 1}")
+    print(f"Adive Title Attempt: {i + 1}")
     response = model.generate_content(
         f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
         f'- The title MUST be 80 characters or fewer'
@@ -108,59 +111,23 @@ print(advice_title)
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
-def authenticate_youtube():
-    creds = Credentials(
-        token=None,
-        refresh_token=YOUTUBE_REFRESH_TOKEN,
-        token_uri='https://oauth2.googleapis.com/token',
-        client_id=client_id_youtube,
-        client_secret=client_secret_youtube,
-        scopes=["https://www.googleapis.com/auth/youtube.upload"],
-        )
-    creds.refresh(Request())  # This fetches a new access token using the refresh token
-    youtube = build('youtube', 'v3', credentials=creds)
-    return youtube
-
-# Upload to YouTube
-def upload_video(file_path, title, description, youtube_hashtags):
-    youtube = authenticate_youtube()
-    body = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": youtube_hashtags,
-            "categoryId": "22"
-            },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False
-            }
-        }
-    media = MediaFileUpload(file_path, resumable=True)
-    request = youtube.videos().insert(
-        part="snippet,status",
-        body=body,
-        media_body=media
-        )
-    response = request.execute()
-    print(f"✅ Video uploaded: https://www.youtube.com/watch?v={response['id']}")
-
-    # Cleanup local file
-    os.remove(file_path)
-    print("🧹 Local file deleted.")
-
-# ✅ Upload final video to YouTube
+# Upload final video to YouTube
 local_path = "youtube_advice.mp4"
 print("Uploading started...")
 
 try:
-    upload_video(file_path=local_path, title=f'{advice_title} #shorts', description="", youtube_hashtags="")
+    YouTube.upload_video(
+        file_path=local_path,
+        title=f'{advice_title} #shorts',
+        description='',
+        youtube_hashtags='',
+        thumbnail=''
+        )
 except Exception as e:
     print(f"Failed to upload video: {e}")
 finally:
     if os.path.exists(local_path):
         try:
-            time.sleep(20)
             os.remove(local_path)
             print("Cleaned up local video file.")
         except Exception as cleanup_error:
@@ -176,7 +143,9 @@ try:
         body=f'Advice: {today_advice}\nAI Summary/Title: {advice_title}!',
         to=f'whatsapp:{my_number}'
         )
+    print(message.sid)
 except Exception as whatsapp:
     print(f'Failed to send to Whatsapp error: {whatsapp}')
 
-print(message.sid)
+finish_time = time.time()
+print(f"Finished in {round(finish_time - start_time, 2)} seconds.")
