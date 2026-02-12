@@ -53,7 +53,7 @@ def get_uploads_playlist_id(channel_id):
     response = youtube.channels().list(
         part="contentDetails",
         id=channel_id
-    ).execute()
+        ).execute()
     playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
     print(f"Uploads playlist ID: {playlist_id}")
     return playlist_id
