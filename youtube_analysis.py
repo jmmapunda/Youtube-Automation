@@ -5,6 +5,9 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from supabase import create_client, Client
 from dotenv import load_dotenv
+import time
+
+start_time = time.time()
 
 # load_dotenv()
 # === CONSTANTS === #
@@ -24,13 +27,13 @@ YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 YT_FORCE_RT = os.getenv('YT_FORCE_RT')
 
 # === SUPABASE SETUP === #
-print("🔌 Connecting to Supabase...")
+print("Connecting to Supabase...")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-print("✅ Supabase connection established.")
+print("Supabase connection established.")
 
 # === YOUTUBE DATA FETCHING === #
 def authenticate_youtube():
-    print("🔐 Authenticating YouTube API...")
+    print("Authenticating YouTube API...")
     creds = Credentials(
         token=None,
         refresh_token=YTA_YOUTUBE_REFRESH_TOKEN,
@@ -40,23 +43,23 @@ def authenticate_youtube():
         scopes=["https://www.googleapis.com/auth/youtube.readonly"],
     )
     creds.refresh(Request())
-    print("✅ YouTube authentication successful.")
+    print("YouTube authentication successful.")
     return build("youtube", "v3", credentials=creds)
 
 youtube = authenticate_youtube()
 
 def get_uploads_playlist_id(channel_id):
-    print("📥 Fetching uploads playlist ID...")
+    print("Fetching uploads playlist ID...")
     response = youtube.channels().list(
         part="contentDetails",
         id=channel_id
     ).execute()
     playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
-    print(f"✅ Uploads playlist ID: {playlist_id}")
+    print(f"Uploads playlist ID: {playlist_id}")
     return playlist_id
 
 def get_all_video_ids(playlist_id):
-    print("📼 Fetching all video IDs from playlist...")
+    print("Fetching all video IDs from playlist...")
     video_ids = []
     next_page_token = None
     while True:
@@ -74,66 +77,96 @@ def get_all_video_ids(playlist_id):
         if not next_page_token:
             break
 
-    print(f"✅ Total videos found: {len(video_ids)}")
+    print(f"Total videos found: {len(video_ids)}")
     return video_ids
 
-def get_video_details(video_id, index, total):
-    print(f"🔍 Fetching video {index + 1} out of {total}...")
-    video_response = youtube.videos().list(
-        part="snippet,statistics",
-        id=video_id
-    ).execute()
+def get_video_details(video_ids, channel_id):
+    """
+    Fetch video details (batched) + subscriber count in one function.
+    video_ids: list[str]
+    channel_id: str
+    """
 
-    snippet = video_response['items'][0]['snippet']
-    stats = video_response['items'][0]['statistics']
-
-    upload_date = datetime.datetime.strptime(snippet['publishedAt'][:10], "%Y-%m-%d").date()
-    title = snippet['title']
-    description = snippet.get('description', '')
-    view_count = int(stats.get('viewCount', 0))
-    like_count = int(stats.get('likeCount', 0))
-    comment_count = int(stats.get('commentCount', 0))
-
+    # Fetch subscriber count ONCE
     subs_response = youtube.channels().list(
         part="statistics",
         id=channel_id
     ).execute()
-    subscriber_count = int(subs_response['items'][0]['statistics'].get('subscriberCount', 0))
 
-    return {
-        "video_id": video_id,
-        "title": title,
-        "description": description,
-        "upload_date": str(upload_date),
-        "view_count": view_count,
-        "like_count": like_count,
-        "comment_count": comment_count,
-        "subscriber_count": subscriber_count
-    }
+    subscriber_count = int(
+        subs_response["items"][0]["statistics"].get("subscriberCount", 0)
+    )
 
-def save_or_update_video(data):
-    print(f"💾 Saving or updating video data...")
-    existing = supabase.table("youtube_automation").select("video_id").eq("video_id", data['video_id']).execute()
-    if existing.data:
-        supabase.table("youtube_automation").update(data).eq("video_id", data['video_id']).execute()
-        print("🔄 Video updated.")
-    else:
-        supabase.table("youtube_automation").insert(data).execute()
-        print("🆕 Video inserted.")
+    full_video_data = {}
+    total = len(video_ids)
+
+    # Batch video requests (50 IDs max per request)
+    for index in range(0, total, 50):
+        batch_ids = video_ids[index:index + 50]
+
+        print(
+            f"Fetching videos {index + 1}–{min(index + 50, total)} out of {total}..."
+        )
+
+        video_response = youtube.videos().list(
+            part="snippet,statistics",
+            id=",".join(batch_ids)
+        ).execute()
+
+        for item in video_response.get("items", []):
+            snippet = item["snippet"]
+            stats = item.get("statistics", {})
+
+            upload_date = datetime.datetime.strptime(
+                snippet["publishedAt"][:10], "%Y-%m-%d"
+            ).date()
+
+            full_video_data[item["id"]] = {
+                "video_id": item["id"],
+                "title": snippet["title"],
+                "description": snippet.get("description", ""),
+                "upload_date": str(upload_date),
+                "view_count": int(stats.get("viewCount", 0)),
+                "like_count": int(stats.get("likeCount", 0)),
+                "comment_count": int(stats.get("commentCount", 0)),
+                "subscriber_count": subscriber_count
+            }
+
+    return full_video_data
+
+def save_or_update_videos(video_data):
+    """
+    Bulk UPSERT for multiple videos
+    """
+    rows = list(video_data.values())
+
+    if not rows:
+        print("No videos to upsert")
+        return
+
+    response = (
+        supabase
+        .table("youtube_automation")
+        .upsert(
+            rows,
+            on_conflict="video_id"
+        )
+        .execute()
+    )
+
+    print(f"Upserted {len(rows)} videos.")
+    return response
+
 
 # === MAIN FETCH AND STORE === #
 uploads_playlist_id = get_uploads_playlist_id(channel_id)
 video_ids = get_all_video_ids(uploads_playlist_id)
-
-for index, vid in enumerate(video_ids):
-    details = get_video_details(vid, index, len(video_ids))
-    save_or_update_video(details)
-
-print("✅ All video data saved or updated in Supabase.")
+details = get_video_details(video_ids, channel_id)
+save_or_update_videos(details)
 
 # === GOOGLE SHEETS AUTH === #
 def authenticate_sheets():
-    print("🔐 Authenticating Google Sheets API...")
+    print("Authenticating Google Sheets API...")
     creds = Credentials(
         token=None,
         refresh_token=GSHEETS_REFRESH_TOKEN,
@@ -143,12 +176,12 @@ def authenticate_sheets():
         scopes=["https://www.googleapis.com/auth/spreadsheets"],
     )
     creds.refresh(Request())
-    print("✅ Google Sheets authentication successful.")
+    print("Google Sheets authentication successful.")
     return build('sheets', 'v4', credentials=creds)
 
 # === EXPORT TO SHEET === #
 def export_to_sheet():
-    print("📤 Exporting data to Google Sheets...")
+    print("Exporting data to Google Sheets...")
     service = authenticate_sheets()
     sheet = service.spreadsheets()
 
@@ -175,7 +208,7 @@ def export_to_sheet():
         body={"values": rows}
     ).execute()
 
-    print("📊 Data exported to Google Sheets")
+    print("Data exported to Google Sheets")
 
 export_to_sheet()
 
@@ -243,3 +276,7 @@ if today.day % 2 == 0:
         print(e)
 else:
     print("We are not Deleting video Today")
+
+finish_time = time.time()
+print('its takes', finish_time - start_time)
+# Time in seconds
