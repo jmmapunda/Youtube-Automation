@@ -232,13 +232,10 @@ for to_delete in response_data.data:
         filtered.append(to_delete)
 
 delete_this = []
-delete = sorted(filtered, key=lambda x: x['id'])[:1]
+delete = sorted(filtered, key=lambda x: x['id'])[:3]
 for item in delete:
     delete_this.append(item['video_id'])
     print(item['id'])
-
-video_to_delete = delete_this[0]
-print(video_to_delete)
 
 def authenticate_youtube():
     creds = Credentials(
@@ -262,18 +259,19 @@ def delete_video(video_id):
         print(f"Failed to delete video {video_id}: {e}")
 
 if today.day % 2 == 0:
-    try:
-        delete_video(f'{video_to_delete}')
-        response_delete = (
-            supabase.table("youtube_automation")
-            .delete()
-            .eq("video_id", video_to_delete)  # filter by video_id
-            .execute()
-        )
+    for to_delete_videos in delete_this:
+        try:
+            delete_video(f'{to_delete_videos}')
+            response_delete = (
+                supabase.table("youtube_automation")
+                .delete()
+                .eq("video_id", to_delete_videos)  # filter by video_id
+                .execute()
+            )
 
-        print(response_delete.data)
-    except Exception as e:
-        print(e)
+            print(response_delete.data)
+        except Exception as e:
+            print(e)
 else:
     print("We are not Deleting video Today")
 
