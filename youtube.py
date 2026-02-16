@@ -18,12 +18,16 @@ api_KEY_youtube = os.getenv('api_KEY_youtube')
 AI_KEY = os.getenv('AI_KEY')
 
 def horoscope(time, data, sn=1):
-    response = requests.get(time).json()
-    data.append({
-        "sign": sign,
-        "horoscope": response['data']['horoscope_data'],
-        'sn': sn
-        })
+    try:
+        response = requests.get(time).json()
+        data.append({
+            "sign": sign,
+            "horoscope": response['data']['horoscope_data'],
+            'sn': sn
+            })
+    except Exception as e:
+        print('API Failed to captured horoscope', e)
+        exit()
 
 today = datetime.now()
 today_date = datetime.now().strftime('%B %d, %Y')
