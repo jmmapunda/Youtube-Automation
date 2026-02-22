@@ -14,7 +14,7 @@ jobs:
     env:
       client_id_youtube: ${{ secrets.YTA_CLIENT_ID }}
       client_secret_youtube: ${{ secrets.YTA_CLIENT_SECRET }}
-      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YT_MOOD_RT }}
+      YT_MOOD_RT: ${{ secrets.YT_MOOD_RT }}
 
 
     steps:
