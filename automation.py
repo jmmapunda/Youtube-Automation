@@ -8,9 +8,9 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 
 # load_dotenv()
-client_id_youtube = os.getenv('client_id_youtube')
-client_secret_youtube = os.getenv('client_secret_youtube')
-YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+# client_id_youtube = os.getenv('client_id_youtube')
+# client_secret_youtube = os.getenv('client_secret_youtube')
+# YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
 class TextToSpeech:
     def __init__(self, text):
@@ -49,7 +49,7 @@ class TextToSpeech:
 
 class YouTube:
     @classmethod
-    def authenticate_youtube(cls):
+    def authenticate_youtube(cls, YOUTUBE_REFRESH_TOKEN, client_id_youtube, client_secret_youtube):
         creds = Credentials(
             token=None,
             refresh_token=YOUTUBE_REFRESH_TOKEN,
@@ -63,8 +63,8 @@ class YouTube:
         return youtube
 
     @classmethod
-    def upload_video(cls, file_path, title, description, youtube_hashtags, thumbnail):
-        youtube = cls.authenticate_youtube()
+    def upload_video(cls, file_path, title, description, youtube_hashtags, thumbnail, authenticate_youtube):
+        youtube = authenticate_youtube
         body = {
             "snippet": {
                 "title": title,

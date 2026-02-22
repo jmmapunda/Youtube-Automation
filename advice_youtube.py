@@ -18,6 +18,9 @@ AI_KEY = os.getenv('AI_KEY')
 twilio_account_sid = os.getenv('twilio_account_sid')
 twilio_auth_token = os.getenv('twilio_auth_token')
 my_number = os.getenv('my_number')
+client_id_youtube = os.getenv('client_id_youtube')
+client_secret_youtube = os.getenv('client_secret_youtube')
+YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
@@ -115,13 +118,19 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 local_path = "youtube_advice.mp4"
 print("Uploading started...")
 
+authenticate_youtube = YouTube.authenticate_youtube(
+    client_id_youtube=client_id_youtube,
+    client_secret_youtube=client_secret_youtube,
+    YOUTUBE_REFRESH_TOKEN=YOUTUBE_REFRESH_TOKEN)
+
 try:
     YouTube.upload_video(
         file_path=local_path,
         title=f'{advice_title} #shorts',
         description='',
         youtube_hashtags='',
-        thumbnail=''
+        thumbnail='',
+        authenticate_youtube=authenticate_youtube
         )
 except Exception as e:
     print(f"Failed to upload video: {e}")

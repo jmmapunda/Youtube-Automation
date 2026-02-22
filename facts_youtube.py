@@ -193,13 +193,19 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 local_path = "youtube_facts.mp4"
 print("Uploading started...")
 
+authenticate_youtube = YouTube.authenticate_youtube(
+    client_id_youtube=client_id_youtube,
+    client_secret_youtube=client_secret_youtube,
+    YOUTUBE_REFRESH_TOKEN=YOUTUBE_REFRESH_TOKEN)
+
 try:
     YouTube.upload_video(
         file_path=local_path,
         title=facts_title,
         description=facts_description,
         youtube_hashtags=None,
-        thumbnail=''
+        thumbnail='',
+        authenticate_youtube=authenticate_youtube
         )
     print("Uploaded video successfully.")
 except Exception as e:

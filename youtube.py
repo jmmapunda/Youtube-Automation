@@ -16,6 +16,9 @@ APIKEY = os.getenv('APIKEY')
 APISECRET = os.getenv('APISECRET')
 api_KEY_youtube = os.getenv('api_KEY_youtube')
 AI_KEY = os.getenv('AI_KEY')
+client_id_youtube = os.getenv('client_id_youtube')
+client_secret_youtube = os.getenv('client_secret_youtube')
+YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
 def horoscope(time, data, sn=1):
     try:
@@ -274,6 +277,10 @@ import numpy as np
 thumbnail_img = Image.fromarray(np.uint8(frame))
 thumbnail_img.save(thumbnail_path)
 
+authenticate_youtube = YouTube.authenticate_youtube(
+    client_id_youtube=client_id_youtube,
+    client_secret_youtube=client_secret_youtube,
+    YOUTUBE_REFRESH_TOKEN=YOUTUBE_REFRESH_TOKEN)
 
 try:
     YouTube.upload_video(
@@ -281,7 +288,8 @@ try:
         thumbnail=thumbnail_path,
         title=youtube_title,
         description=horoscope_description,
-        youtube_hashtags=''
+        youtube_hashtags='',
+        authenticate_youtube=authenticate_youtube,
         )
 
     print("Uploaded video successfully.")
