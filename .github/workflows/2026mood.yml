@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      client_id_youtube: ${{ secrets.YTA_CLIENT_ID }}
-      client_secret_youtube: ${{ secrets.YTA_CLIENT_SECRET }}
+      YTA_CLIENT_ID: ${{ secrets.YTA_CLIENT_ID }}
+      YTA_CLIENT_SECRET: ${{ secrets.YTA_CLIENT_SECRET }}
       YT_MOOD_RT: ${{ secrets.YT_MOOD_RT }}
 
 
