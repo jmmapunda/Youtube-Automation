@@ -1,4 +1,5 @@
 import datetime
+import time
 from automation import YouTube
 from dotenv import load_dotenv
 import os
@@ -43,5 +44,6 @@ authenticate_youtube = YouTube.authenticate_youtube(
 YouTube.upload_video(file_path=file_path, title=title, description=description, youtube_hashtags=hashtags,
                      thumbnail=thumbnail, authenticate_youtube=authenticate_youtube)
 
+time.sleep(60)
 os.remove(file_path)
 print("🧹 Local file deleted.")

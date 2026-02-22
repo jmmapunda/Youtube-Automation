@@ -50,7 +50,6 @@ class TextToSpeech:
 class YouTube:
     @classmethod
     def authenticate_youtube(cls, YOUTUBE_REFRESH_TOKEN, client_id_youtube, client_secret_youtube):
-        print(YOUTUBE_REFRESH_TOKEN, client_id_youtube, client_secret_youtube)
         creds = Credentials(
             token=None,
             refresh_token=YOUTUBE_REFRESH_TOKEN,
