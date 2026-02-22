@@ -6,7 +6,7 @@ import urllib.request
 
 
 
-# load_dotenv()
+load_dotenv()
 client_id_youtube = os.getenv("YTA_CLIENT_ID")
 client_secret_youtube = os.getenv("YTA_CLIENT_SECRET")
 YOUTUBE_REFRESH_TOKEN = os.getenv("YT_MOOD_RT")
