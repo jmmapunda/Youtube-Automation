@@ -131,9 +131,9 @@ youtube_title = response.text.strip()
 print(f"Generated {video_type.capitalize()} Title: {youtube_title}")
 
 for sign in horoscope_signs:
-    horoscope_daily = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign={sign}&day=TODAY"
-    horoscope_weekly = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/weekly?sign={sign}"
-    horoscope_monthly = f"https://horoscope-app-api.vercel.app/api/v1/get-horoscope/monthly?sign={sign}"
+    horoscope_daily = f"https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign={sign}&day=TODAY"
+    horoscope_weekly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/weekly?sign={sign}"
+    horoscope_monthly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/monthly?sign={sign}"
     sn = 1
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
