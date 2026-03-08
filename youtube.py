@@ -25,7 +25,7 @@ def horoscope(time, data, sn=1):
         response = requests.get(time).json()
         data.append({
             "sign": sign,
-            "horoscope": response['data']['horoscope_data'],
+            "horoscope": response['data']['horoscope'],
             'sn': sn
             })
     except Exception as e:
