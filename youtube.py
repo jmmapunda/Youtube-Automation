@@ -131,7 +131,7 @@ youtube_title = response.text.strip()
 print(f"Generated {video_type.capitalize()} Title: {youtube_title}")
 
 for sign in horoscope_signs:
-    horoscope_daily = f"https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign={sign}&day=TODAY"
+    horoscope_daily = f"https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign={sign}"
     horoscope_weekly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/weekly?sign={sign}"
     horoscope_monthly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/monthly?sign={sign}"
     sn = 1
