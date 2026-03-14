@@ -7,6 +7,8 @@ import os
 import time
 import google.generativeai as genai
 from automation import YouTube
+from supabase import create_client, Client
+
 
 start_time = time.time()
 # load_dotenv()
@@ -20,6 +22,10 @@ client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
 
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_srkey = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+supabase: Client = create_client(supabase_url, supabase_srkey)
+
 def horoscope(time, data, sn=1):
     try:
         response = requests.get(time).json()
@@ -31,6 +37,10 @@ def horoscope(time, data, sn=1):
     except Exception as e:
         print('API Failed to captured horoscope', e)
         exit()
+#
+# def save_horoscope(time, data, day):
+#     try:
+#
 
 today = datetime.now()
 today_date = datetime.now().strftime('%B %d, %Y')
@@ -129,12 +139,32 @@ response = model.generate_content(prompt)
 youtube_title = response.text.strip()
 
 print(f"Generated {video_type.capitalize()} Title: {youtube_title}")
+day_today = datetime.now().strftime('%B %d')
+week_today = datetime.now().isocalendar().week
+month_today = datetime.now().month
+
+
+def save_horoscope_data(time_supabase, time, date, data_horoscope):
+    try:
+        supabase.table(time).insert(
+            {time_supabase: date, 'sign': sign, 'horoscope': data_horoscope}).execute()
+    except Exception as e:
+        print('Failed to insert and save horoscope data', e)
+
 
 for sign in horoscope_signs:
     horoscope_daily = f"https://freehoroscopeapi.com/api/v1/get-horoscope/daily?sign={sign}"
     horoscope_weekly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/weekly?sign={sign}"
     horoscope_monthly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/monthly?sign={sign}"
     sn = 1
+
+    daily_horoscope_data = requests.get(horoscope_daily).json()['data']['horoscope']
+    weekly_horoscope_data = requests.get(horoscope_weekly).json()['data']['horoscope']
+    monthly_horoscope_data = requests.get(horoscope_monthly).json()['data']['horoscope']
+    save_horoscope_data(time_supabase='date', time='horoscope_day', date=day_today, data_horoscope=daily_horoscope_data)
+    save_horoscope_data(time_supabase='week', time='horoscope_week', date=week_today, data_horoscope=weekly_horoscope_data)
+    save_horoscope_data(time_supabase='month', time='horoscope_month', date=month_today, data_horoscope=monthly_horoscope_data)
+
     if datetime.now().day == 1:
         horoscope(horoscope_monthly, data_monthly)
         sn += 1
