@@ -51,7 +51,12 @@ for attempt in range(MAX_RETRIES):
             time.sleep(retry_delay)
     try:
         results_2 = requests.get(URL_2).text
-        facts.append((results_2, 'Numbers API'))
+        if '<html' in results_2:
+            print('Numbers API Fails.', results_2[:30])
+            results_2 = None
+            facts.append((results_2, 'Numbers API'))
+        else:
+            facts.append((results_2, 'Numbers API'))
 
     except Exception as e:
         results_2 = None
