@@ -26,7 +26,7 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 print("✅ Supabase connection established.")
-
+#todo remove numbersapi since no results provided just errors!
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
 URL_2 = 'http://numbersapi.com/random/trivia'  # .text
 URL_3 = 'https://api.api-ninjas.com/v1/facts'  # .[0]['fact'] from API NINJA
