@@ -52,25 +52,25 @@ current_month = today.strftime('%B')
 horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
                    "Capricorn", "Aquarius", "Pisces"]
 closing_texts = [
-    "Thanks for watching! Come back tomorrow for your next horoscope 🌟",
-    "Enjoyed your reading? Subscribe for daily cosmic insights ✨",
-    "One horoscope a day keeps uncertainty away 🔮 Subscribe now!",
-    "The stars never sleep, and neither do we 🌙 Subscribe for more!",
-    "Tomorrow’s destiny awaits... don’t miss it 🔭 Subscribe!",
-    "Hit like if the stars spoke to you today ⭐",
-    "Know someone who loves astrology? Share this with them 🌌",
-    "Join our cosmic community — subscribe for daily horoscopes 💫",
-    "The universe has more in store for you… come back tomorrow 🌠",
-    "Feeling aligned? Make it a daily ritual 🔁 Subscribe now!",
-    "Let the stars guide you daily ✨ Hit that subscribe button!",
-    "Your next forecast is just a sunrise away ☀️ Don’t miss it!",
-    "More astrology, more insight 🔮 Subscribe and stay tuned!",
-    "Unlock the mysteries of the universe daily — subscribe now 🌌",
-    "Stay in sync with the cosmos 🪐 New horoscope every day!",
+    "Thanks for watching! Come back tomorrow for your next horoscope",
+    "Enjoyed your reading? Subscribe for daily cosmic insights",
+    "One horoscope a day keeps uncertainty away Subscribe now!",
+    "The stars never sleep, and neither do we Subscribe for more!",
+    "Tomorrow’s destiny awaits... don’t miss it Subscribe!",
+    "Hit like if the stars spoke to you today",
+    "Know someone who loves astrology? Share this with them",
+    "Join our cosmic community — subscribe for daily horoscopes",
+    "The universe has more in store for you… come back tomorrow",
+    "Feeling aligned? Make it a daily ritual Subscribe now!",
+    "Let the stars guide you daily Hit that subscribe button!",
+    "Your next forecast is just a sunrise away Don’t miss it!",
+    "More astrology, more insight Subscribe and stay tuned!",
+    "Unlock the mysteries of the universe daily — subscribe now",
+    "Stay in sync with the cosmos New horoscope every day!",
     "Let your zodiac lead the way — subscribe for tomorrow’s reading!",
-    "Thanks for your energy today 💖 See you tomorrow under new stars!",
-    "Don’t miss a sign from the stars — turn on notifications 🔔",
-    "Your future self will thank you — subscribe for daily guidance 💫",
+    "Thanks for your energy today See you tomorrow under new stars!",
+    "Don’t miss a sign from the stars — turn on notifications",
+    "Your future self will thank you — subscribe for daily guidance",
     ]
 
 closing_text = random.choice(closing_texts)
@@ -82,12 +82,9 @@ data_monthly = []
 
 #RANDOMIZATION COMPONENTS
 tones = ["mystical", "urgent", "romantic", "career-focused", "uplifting", "mysterious"]
-emojis = ["🔮", "✨", "🌟", "🌌", "♈♉♊", "🔥", "🌠", "🪐", "📅"]
 selected_tone = random.choice(tones)
-selected_emojis = random.sample(emojis, 2)
 
 #DATE INFO
-today_date = datetime.now().strftime('%B %d, %Y')
 current_week = datetime.now().isocalendar().week
 
 #VIDEO TYPE: 'daily', 'weekly', or 'monthly'
@@ -113,10 +110,9 @@ prompt = f"""
 You're a YouTube SEO expert and creative title writer.
 Generate ONE highly engaging, click-worthy YouTube title (one line only) for a {video_type} horoscope video based on this:
 
-🪐 Content: "{base_title}"
-🎯 Style: {style_note}
-🎭 Tone: {selected_tone}
-🎉 Emojis: {' '.join(selected_emojis)}
+Content: "{base_title}"
+Style: {style_note}
+Tone: {selected_tone}
 
 - Must be under 100 characters
 - Include SEO keywords like: 'horoscope', 'astrology', 'zodiac', '{video_type} prediction', etc.
@@ -125,9 +121,9 @@ Generate ONE highly engaging, click-worthy YouTube title (one line only) for a {
 - Must contain two hashtags
 
 Examples:
-- "This Week’s Astrology Forecast 🔮 What Awaits Your Sign? (Week {current_week}) #VirgoHoroscope #LibraHoroscope"
-- "August 2025 Horoscope 🌟 Monthly Insights for All Zodiac Signs #ZodiacReading #AstrologyUpdate"
-- "Today’s Horoscope Revealed ✨ What the Stars Say for {today_date} #Horoscope #Astrology"
+- "This Week’s Astrology Forecast What Awaits Your Sign? (Week {current_week}) #VirgoHoroscope #LibraHoroscope"
+- "August 2025 Horoscope Monthly Insights for All Zodiac Signs #ZodiacReading #AstrologyUpdate"
+- "Today’s Horoscope Revealed What the Stars Say for {today_date} #Horoscope #Astrology"
 
 Now generate the title:
 """

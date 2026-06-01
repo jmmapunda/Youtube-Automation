@@ -25,7 +25,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-print("✅ Supabase connection established.")
+print("Supabase connection established.")
 #todo remove numbersapi since no results provided just errors!
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
 URL_2 = 'http://numbersapi.com/random/trivia'  # .text
@@ -75,7 +75,7 @@ for attempt in range(MAX_RETRIES):
 def save_facts(facts):
     rows = [{"Fact": fact, "Source": source} for fact, source in facts]
     supabase.table("facts").insert(rows).execute()
-    print(f"🆕 Inserted {len(rows)} facts into Supabase.")
+    print(f"Inserted {len(rows)} facts into Supabase.")
 
 allfacts = supabase.table('facts').select('Fact').execute()
 factsresults = allfacts.data

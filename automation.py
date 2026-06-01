@@ -85,7 +85,7 @@ class YouTube:
             )
         response = request.execute()
         video_id = response['id']
-        print(f"✅ Video uploaded: https://www.youtube.com/watch?v={video_id}")
+        print(f"Video uploaded: https://www.youtube.com/watch?v={video_id}")
         thumbnail_request = youtube.thumbnails().set(
             videoId=video_id,
             media_body=thumbnail
