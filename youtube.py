@@ -5,8 +5,7 @@ from moviepy import *
 from datetime import datetime
 import os
 import time
-import google.generativeai as genai
-from automation import YouTube
+from automation import YouTube, AI
 from supabase import create_client, Client
 
 
@@ -37,17 +36,12 @@ def horoscope(time, data, sn=1):
     except Exception as e:
         print('API Failed to captured horoscope', e)
         exit()
-#
-# def save_horoscope(time, data, day):
-#     try:
-#
 
 today = datetime.now()
 today_date = datetime.now().strftime('%B %d, %Y')
 current_year = datetime.now().year
 day_of_year = today.timetuple().tm_yday
 current_month = today.strftime('%B')
-
 
 horoscope_signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius",
                    "Capricorn", "Aquarius", "Pisces"]
@@ -118,21 +112,17 @@ Tone: {selected_tone}
 - Include SEO keywords like: 'horoscope', 'astrology', 'zodiac', '{video_type} prediction', etc.
 - Avoid repeating phrases from previous days/weeks/months
 - Add curiosity or urgency when appropriate
-- Must contain two hashtags
 
 Examples:
-- "This Week’s Astrology Forecast What Awaits Your Sign? (Week {current_week}) #VirgoHoroscope #LibraHoroscope"
-- "August 2025 Horoscope Monthly Insights for All Zodiac Signs #ZodiacReading #AstrologyUpdate"
-- "Today’s Horoscope Revealed What the Stars Say for {today_date} #Horoscope #Astrology"
+- "This Week’s Astrology Forecast What Awaits Your Sign? (Week {current_week})"
+- "August 2025 Horoscope Monthly Insights for All Zodiac Signs"
+- "Today’s Horoscope Revealed What the Stars Say for {today_date}"
 
 Now generate the title:
 """
-
-#Gemini API
-genai.configure(api_key=AI_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
-response = model.generate_content(prompt)
-youtube_title = response.text.strip()
+ai_title = AI(prompt)
+response = ai_title.ai_summary()
+youtube_title = response.strip()
 
 print(f"Generated {video_type.capitalize()} Title: {youtube_title}")
 day_today = datetime.now().strftime('%B %d')
@@ -192,9 +182,9 @@ Here is the horoscope data: {horoscope_data}
 
 Generate the description only.
 """
-
-response = model.generate_content(prompt_youtube_description)
-horoscope_description = response.text.strip()
+ai_description = AI(prompt_youtube_description)
+response = ai_description.ai_summary()
+horoscope_description = response.strip()
 print(f'Generated description: {horoscope_description}')
 
 horoscope_video = random.choice(range(1, 10))

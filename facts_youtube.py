@@ -6,10 +6,8 @@ import random
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import google.generativeai as genai
 import pandas as pd
-from automation import TextToSpeech, YouTube
-
+from automation import TextToSpeech, YouTube, AI
 
 start_time = time.time()
 # load_dotenv()
@@ -26,9 +24,9 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 print("Supabase connection established.")
-#todo remove numbersapi since no results provided just errors!
+#todo numbers api keeps failling need to find new api for facts
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
-URL_2 = 'http://numbersapi.com/random/trivia'  # .text
+
 URL_3 = 'https://api.api-ninjas.com/v1/facts'  # .[0]['fact'] from API NINJA
 
 today = datetime.now()
@@ -49,20 +47,9 @@ for attempt in range(MAX_RETRIES):
         print(f"Attempt {attempt + 1} failed: {e}")
         if attempt < MAX_RETRIES - 1:
             time.sleep(retry_delay)
-    try:
-        results_2 = requests.get(URL_2).text
-        if '<html' in results_2:
-            print('Numbers API Fails.', results_2[:30])
-            results_2 = None
-            facts.append((results_2, 'Numbers API'))
-        else:
-            facts.append((results_2, 'Numbers API'))
 
-    except Exception as e:
-        results_2 = None
-        print(f"Attempt {attempt + 1} failed: {e}")
-        if attempt < MAX_RETRIES - 1:
-            time.sleep(retry_delay)
+    results_2 = None
+
     try:
         results_3 = requests.get(URL_3, headers={'X-Api-Key': NINJA_API_KEY}).json()[0]['fact']
         facts.append((results_3, 'Ninja API'))
@@ -96,10 +83,8 @@ print(f'Results 3:{results_3}')
 facts_description = random.choice([results, results_2, results_3])
 today_facts = f"'{results}', '{results_2}', '{results_3}'"
 
-genai.configure(api_key=f"{AI_KEY}")
 
-model = genai.GenerativeModel("gemini-2.5-flash")
-response = model.generate_content(
+promt = (
     f'Create one catchy, SEO-optimized YouTube title (max 80 characters) for a facts video based on these facts: {today_facts}.'
     f'The title should: '
     f'Be exciting, curiosity-driven, and natural (not clickbait).'
@@ -109,8 +94,10 @@ response = model.generate_content(
     f'Two relevant hashtags'
     f'Output only the final title.')
 
-print(f'AI summary is: {response.text}')
-facts_title = response.text
+ai_title = AI(promt)
+response = ai_title.ai_summary()
+print(f'AI summary is: {response}')
+facts_title = response
 
 closing_texts = [
     "Subscribe for more daily facts!", "Liked the video? More coming tomorrow \ndon’t forget to subscribe!",

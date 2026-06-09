@@ -4,11 +4,10 @@ from datetime import datetime
 from moviepy import *
 import random
 import os
-import google.generativeai as genai
 from twilio.rest import Client
 from dotenv import load_dotenv
 from gtts import gTTS
-from automation import YouTube, TextToSpeech
+from automation import YouTube, TextToSpeech, AI
 
 start_time = time.time()
 # load_dotenv()
@@ -31,8 +30,6 @@ if response.status_code == requests.codes.ok:
     print(response.json()['advice'])
 today_advice = response.json()['advice']
 print(today_advice)
-
-from moviepy import *
 
 one_line = 28
 lines = len(response.json()['advice']) // one_line + 2
@@ -85,31 +82,26 @@ except Exception as e:
 final = CompositeVideoClip([background, image, text])
 final = final.with_audio(audio)
 # Export the video
-final.write_videofile("youtube_advice.mp4", fps=24)
 
-genai.configure(api_key=f"{AI_KEY}")
-
-model = genai.GenerativeModel("gemini-2.5-flash")
-
+promt = (f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
+         f'- The title MUST be 80 characters or fewer'
+         f'- Natural, engaging, SEO-friendly, click-worthy'
+         f'- Include 1–2 relevant hashtags at the end'
+         f'- NO emojis, NO symbols'
+         f'- Return ONLY the title text'
+         f'- Do NOT add explanations, quotes, options, or extra words')
+ai_title = AI(promt)
 for i in range(10):
     print(f"Adive Title Attempt: {i + 1}")
-    response = model.generate_content(
-        f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
-        f'- The title MUST be 80 characters or fewer'
-        f'- Natural, engaging, SEO-friendly, click-worthy'
-        f'- Include 1–2 relevant hashtags at the end'
-        f'- NO emojis, NO symbols'
-        f'- Return ONLY the title text'
-        f'- Do NOT add explanations, quotes, options, or extra words'
-        )
+    response = ai_title.ai_summary()
 
-    if len(response.text) < 80:
-        print(f'AI summary is: {response.text}')
+    if len(response) < 80:
+        print(f'AI summary is: {response}')
         break
     else:
-        print(f"Failed: {len(response.text)} - {response.text}")
+        print(f"Failed: {len(response)} - {response}")
 
-advice_title = response.text
+advice_title = response
 print(advice_title)
 # Set YouTube upload scope
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]

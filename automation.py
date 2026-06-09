@@ -6,11 +6,16 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
+from groq import Groq
+from google import genai
+import json
 
 # load_dotenv()
 # client_id_youtube = os.getenv('client_id_youtube')
 # client_secret_youtube = os.getenv('client_secret_youtube')
 # YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+GROQ_KEY = os.getenv("GROQ_KEY")
+AI_KEY = os.getenv("AI_KEY")
 
 class TextToSpeech:
     def __init__(self, text):
@@ -101,3 +106,43 @@ class YouTube:
             print("Local file deleted.")
         except Exception as e:
             print('Failed to remove', e)
+
+class AI:
+    def __init__(self, promt):
+        self.promt = promt
+
+    def ai_summary(self):
+        client_groq = Groq(
+            api_key=GROQ_KEY,
+            )
+
+        client = genai.Client(api_key=f"{AI_KEY}")
+
+        model = "gemini-2.5-flash"
+
+        ai_output = None
+        try:
+            response = client.models._generate_content(
+                model=model,
+                contents=self.promt,
+                )
+            ai_output = response.text
+        except Exception as e:
+            print("Gemini Failed.", e)
+
+        if ai_output is None:
+            try:
+                chat_completion = client_groq.chat.completions.create(
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": self.promt,
+                            }
+                        ],
+                    model="llama-3.3-70b-versatile",
+                    )
+                ai_output = chat_completion.choices[0].message.content
+            except Exception as e:
+                print('Groq Failed', e)
+
+        return ai_output
