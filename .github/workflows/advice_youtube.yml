@@ -26,6 +26,7 @@ jobs:
       twilio_account_sid: ${{ secrets.twilio_account_sid }}
       twilio_auth_token: ${{ secrets.twilio_auth_token }}
       my_number: ${{ secrets.my_number }}
+      GROQ_KEY: ${{ secrets.GROQ_KEY }}
 
 
 
