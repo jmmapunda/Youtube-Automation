@@ -82,6 +82,7 @@ except Exception as e:
 final = CompositeVideoClip([background, image, text])
 final = final.with_audio(audio)
 # Export the video
+final.write_videofile("youtube_advice.mp4", fps=24)
 
 promt = (f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
          f'- The title MUST be 80 characters or fewer'
