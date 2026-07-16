@@ -389,7 +389,6 @@ final.write_videofile(
     codec="libx264",
     preset="fast",
     threads=8,
-    audio_codec="aac"
     )
 
 url_youtube = 'https://www.googleapis.com/youtube/v3'
