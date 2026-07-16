@@ -7,6 +7,8 @@ import os
 import time
 from automation import YouTube, AI
 from supabase import create_client, Client
+from PIL import ImageFont, ImageDraw, Image
+import numpy as np
 
 
 start_time = time.time()
@@ -191,72 +193,184 @@ horoscope_video = random.choice(range(1, 10))
 print(f"Video used is horoscope_{horoscope_video}.mp4")
 video_time = 123
 
-video_to_use = VideoFileClip(f"static/assets/video/horoscope_{horoscope_video}.mp4")
+
+def fitted_text(
+        text,
+        font,
+        max_width,
+        max_height,
+        start,
+        duration,
+        color="#FFFFFF",
+        stroke_color="#000000",
+        stroke_width=2,
+        text_align="center",
+        position="center",
+        method="caption",
+        min_font=20,
+        max_font=300,
+        ):
+    """
+    Create the largest possible TextClip that fits inside
+    max_width × max_height using binary search.
+    """
+
+    low = min_font
+    high = max_font
+    best_clip = None
+
+    while low <= high:
+
+        font_size = (low + high) // 2
+
+        clip = TextClip(
+            text=text,
+            font=font,
+            font_size=font_size,
+            color=color,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            size=(max_width, None),
+            method=method,
+            text_align=text_align,
+            )
+
+        if clip.w <= max_width and clip.h <= max_height:
+            best_clip = clip
+            low = font_size + 1
+        else:
+            high = font_size - 1
+
+    if best_clip is None:
+        best_clip = TextClip(
+            text=text,
+            font=font,
+            font_size=min_font,
+            color=color,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            size=(max_width, None),
+            method=method,
+            text_align=text_align,
+            )
+
+    return (
+        best_clip
+        .with_start(start)
+        .with_duration(duration)
+        .with_position(position)
+    )
+
+
+
+video_to_use = VideoFileClip(
+    f"static/assets/video/horoscope_{horoscope_video}.mp4"
+    )
+
+
 video_duration = video_to_use.duration
+
 multiple_by = 1
 if video_duration < video_time:
     multiple_by = int(video_time // video_duration + 1)
-    print(multiple_by)
+
 video = (video_to_use * multiple_by).subclipped(0, video_time)
-video_width, video_height = video.size
-if datetime.now().day == 1:
+
+if datetime.now().day == 1 or datetime.now().weekday() == 0:
+
+    # Landscape 1920x1080
     video_resized = video.resized(height=1080)
-    video_final = video_resized.cropped(width=1920, x_center=video_resized.w / 2)
-    text_width = 1780  # 70px left and right padding
-    font_size = 43
-elif datetime.now().weekday() == 0:
-    video_resized = video.resized(height=1080)
-    video_final = video_resized.cropped(width=1920, x_center=video_resized.w / 2)
-    text_width = 1780  # 70px left and right padding
-    font_size = 50
+    video_final = video_resized.cropped(
+        width=1920,
+        x_center=video_resized.w / 2,
+        )
 
 else:
+
+    # Portrait 1080x1920
     video_resized = video.resized(height=1920)
-    video_final = video_resized.cropped(width=1080, x_center=video_resized.w / 2)
-    text_width = 940  # 70px left and right padding
-    font_size = 100
+    video_final = video_resized.cropped(
+        width=1080,
+        x_center=video_resized.w / 2,
+        )
 
+VIDEO_W = video_final.w
+VIDEO_H = video_final.h
 
-# Text 1 at 0s to 3s
-txt_start = (
-    TextClip(font="static/assets/font/Newsreader_60pt-Bold.ttf", text=f"Welcome\nDay {day_of_year} Daily horoscope!",
-             text_align='center', font_size=190, color='#D5F2ED', stroke_color="#BF0000", stroke_width=3,
-             size=(text_width, None), method='caption', )
-    .with_position("center", 0.1)
-    .with_duration(3)
-    .with_start(0))
+TEXT_WIDTH = int(VIDEO_W * 0.90)
+TEXT_HEIGHT = int(VIDEO_H * 0.90)
+
+TITLE_HEIGHT = int(VIDEO_H * 0.12)
+BODY_HEIGHT = int(VIDEO_H * 0.75)
+
+txt_start = fitted_text(
+    text=f"Welcome\nDay {day_of_year} Daily Horoscope!",
+    font="static/assets/font/Newsreader_60pt-Bold.ttf",
+    max_width=TEXT_WIDTH,
+    max_height=int(VIDEO_W * 0.88),
+    start=0,
+    duration=3,
+    color="#D5F2ED",
+    stroke_color="#BF0000",
+    stroke_width=3,
+    position=("center", VIDEO_H * 0.08),
+    )
+
 start_time = 3
 clips = []
-for horo_time_range in horoscope_data:
-    if horo_time_range:
-        for horoscope_details in horo_time_range:
-            horoscope_details['sign'] = (
-                TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
-                         text=f"{horoscope_details['sign']}", font_size=120, text_align='center', color='yellow',
-                         stroke_color="#BF0000", stroke_width=2, size=(text_width, None), method='caption', )
-                .with_position(('center', 60))
-                .with_duration(10)
-                .with_start(start_time))
-            horoscope_details['sn'] = (
-                TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
-                         text=f"{horoscope_details['horoscope']}", font_size=font_size, text_align='center',
-                         color='#C4EEF2',
-                         stroke_color="#BF0000", stroke_width=2, size=(text_width, None), method='caption', )
-                .with_position("center")
-                .with_duration(10)
-                .with_start(start_time))
-            start_time += 10
-            clips.append(horoscope_details['sign'])
-            clips.append(horoscope_details['sn'])
 
-txt_last = (
-    TextClip(font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf", text=f"{closing_text}", font_size=130,
-             text_align='center', color='#FFFFFF', stroke_color="#E50000", stroke_width=2, size=(text_width, None),
-             method='caption', )
-    .with_position("center")
-    .with_duration(3)
-    .with_start(123))
-# Optional: add background audio
+
+for horo_time_range in horoscope_data:
+
+    if not horo_time_range:
+        continue
+
+    for horoscope_details in horo_time_range:
+        sign = fitted_text(
+            text=horoscope_details["sign"],
+            font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
+            max_width=TEXT_WIDTH,
+            max_height=TITLE_HEIGHT,
+            start=start_time,
+            duration=10,
+            color="yellow",
+            stroke_color="#BF0000",
+            stroke_width=2,
+            position=("center", VIDEO_H * 0.05),
+            )
+
+        body = fitted_text(
+            text=horoscope_details["horoscope"],
+            font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
+            max_width=TEXT_WIDTH,
+            max_height=BODY_HEIGHT,
+            start=start_time,
+            duration=10,
+            color="#C4EEF2",
+            stroke_color="#BF0000",
+            stroke_width=2,
+            position=("center", VIDEO_H * 0.18),
+            )
+
+        clips.append(sign)
+        clips.append(body)
+
+        start_time += 10
+        count += 1
+
+
+txt_last = fitted_text(
+    text=closing_text,
+    font="static/assets/font/Newsreader-VariableFont_opsz,wght.ttf",
+    max_width=TEXT_WIDTH,
+    max_height=TEXT_HEIGHT,
+    start=123,
+    duration=3,
+    color="#FFFFFF",
+    stroke_color="#E50000",
+    stroke_width=2,
+    )
+
 horoscope_audio = random.choice(range(2, 4))
 print(f"Audio used is audio_{horoscope_audio}.mp3")
 
@@ -268,7 +382,15 @@ audio = CompositeAudioClip([audio_looped])
 final = CompositeVideoClip([video_final, txt_start, *clips, txt_last])
 final = final.with_audio(audio)
 
-final.write_videofile("youtube_horoscope.mp4", fps=24, threads=8)
+# final.write_videofile("youtube_horoscope.mp4", fps=24, threads=8)
+final.write_videofile(
+    "youtube_horoscope.mp4",
+    fps=30,
+    codec="libx264",
+    preset="fast",
+    threads=8,
+    audio_codec="aac"
+    )
 
 url_youtube = 'https://www.googleapis.com/youtube/v3'
 response = requests.get(url_youtube, api_KEY_youtube)
@@ -286,9 +408,6 @@ video = VideoFileClip("youtube_horoscope.mp4")
 thumbnail_time = 2  # second mark to grab the frame
 frame = video.get_frame(thumbnail_time)  # Numpy array
 video.close()
-
-from PIL import Image
-import numpy as np
 
 thumbnail_img = Image.fromarray(np.uint8(frame))
 thumbnail_img.save(thumbnail_path)
