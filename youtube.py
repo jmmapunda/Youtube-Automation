@@ -356,7 +356,7 @@ for horo_time_range in horoscope_data:
         clips.append(body)
 
         start_time += 10
-        count += 1
+
 
 
 txt_last = fitted_text(
