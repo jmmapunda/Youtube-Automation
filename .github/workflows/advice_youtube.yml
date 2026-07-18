@@ -27,6 +27,8 @@ jobs:
       twilio_auth_token: ${{ secrets.twilio_auth_token }}
       my_number: ${{ secrets.my_number }}
       GROQ_KEY: ${{ secrets.GROQ_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
       SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
