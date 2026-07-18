@@ -8,6 +8,9 @@ from twilio.rest import Client
 from dotenv import load_dotenv
 from gtts import gTTS
 from automation import YouTube, TextToSpeech, AI
+from supabase import create_client, Client
+import boto3
+
 
 start_time = time.time()
 # load_dotenv()
@@ -20,15 +23,43 @@ my_number = os.getenv('my_number')
 client_id_youtube = os.getenv('client_id_youtube')
 client_secret_youtube = os.getenv('client_secret_youtube')
 YOUTUBE_REFRESH_TOKEN = os.getenv('YOUTUBE_REFRESH_TOKEN')
+ACCESS_KEY = os.getenv("ACCESS_KEY_ID")
+SECRET_KEY = os.getenv("SECRET_ACCESS_KEY")
+ENDPOINT = os.getenv("ENDPOINT")
+
+s3 = boto3.client(
+    's3',
+    endpoint_url=ENDPOINT,
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
+    region_name='auto',
+    )
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+print("Supabase connection established.")
 
 today = datetime.now()
 day_of_year = today.timetuple().tm_yday
 
 advice = 'https://api.api-ninjas.com/v1/advice'
-response = requests.get(advice, headers={'X-Api-Key': NINJA_API_KEY})
-if response.status_code == requests.codes.ok:
-    print(response.json()['advice'])
-today_advice = response.json()['advice']
+
+try:
+    response = requests.get(advice, headers={'X-Api-Key': NINJA_API_KEY})
+    today_advice = response.json()['advice']
+    get_lowest_id = supabase.table('facts').select('id').is_('advice', 'null').order('id', desc=False).limit(
+        1).execute()
+    lowest_id = get_lowest_id.data[0]['id']
+    add_advice = supabase.table('facts').update({'advice': today_advice}).eq('id', lowest_id).execute()
+
+except Exception as e:
+    print('API Failed previous data will be used', e)
+    today_advice_data = supabase.table('facts').select('advice').execute()
+    advice_list = [row['advice'] for row in today_advice_data.data if row['advice'] is not None]
+    today_advice = random.choice(advice_list)
+
 print(today_advice)
 
 one_line = 28
@@ -45,6 +76,17 @@ if today.month == 12:
     image = (ImageClip(f"https://johnmapunda.com/static/assets/image/chrismass/chrismass_{advice_image}.jpg").resized(height=1920 - text_height)
              .with_position(("center", "bottom"))
              .with_duration(10))
+elif today.month != 12:
+    try:
+        advice_image = random.choice(range(1, 29))
+        s3.download_file(
+            'john-file', f'youtube_data/advice/image/image_{advice_image}.jpg', f'image_{advice_image}.jpg')
+        image = (ImageClip(f"./image_{advice_image}.jpg").resized(height=1920 - text_height)
+                 .with_position(("center", "bottom"))
+                 .with_duration(10))
+    except Exception as e:
+        print('Cloudflare Failed, anime image will be used', e)
+
 else:
     advice_image = random.choice(range(1, 18))
     image = (ImageClip(f"static/assets/pictures/anime_{advice_image}.jpg").resized(height=1920 - text_height)
@@ -82,7 +124,7 @@ except Exception as e:
 final = CompositeVideoClip([background, image, text])
 final = final.with_audio(audio)
 # Export the video
-final.write_videofile("youtube_advice.mp4", fps=24)
+final.write_videofile("youtube_advice.mp4", fps=30, threads=8, codec="libx264", preset="fast", )
 
 promt = (f'Generate exactly ONE YouTube title based on the advice: {today_advice}. Rules:'
          f'- The title MUST be 80 characters or fewer'
@@ -130,6 +172,7 @@ except Exception as e:
 finally:
     if os.path.exists(local_path):
         try:
+            os.remove(f'./image_{advice_image}')
             os.remove(local_path)
             print("Cleaned up local video file.")
         except Exception as cleanup_error:

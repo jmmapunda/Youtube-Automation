@@ -24,7 +24,7 @@ SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 print("Supabase connection established.")
-#todo numbers api keeps failling need to find new api for facts
+
 URL = 'https://uselessfacts.jsph.pl/random.json?language=en'  # .json()['text']
 
 URL_3 = 'https://api.api-ninjas.com/v1/facts'  # .[0]['fact'] from API NINJA
