@@ -180,9 +180,8 @@ finally:
 
 
 # Send message to my whatsapp
-client = Client(twilio_account_sid, twilio_auth_token)
-
 try:
+    client = Client(twilio_account_sid, twilio_auth_token)
     message = client.messages.create(
         from_='whatsapp:+14155238886',
         body=f'Advice: {today_advice}\nAI Summary/Title: {advice_title}!',
