@@ -139,7 +139,7 @@ class AI:
                             "content": self.promt,
                             }
                         ],
-                    model="llama-3.3-70b-versatile",
+                    model="gpt-oss-120b",
                     )
                 ai_output = chat_completion.choices[0].message.content
             except Exception as e:
