@@ -146,8 +146,15 @@ for sign in horoscope_signs:
     horoscope_monthly = f"https://freehoroscopeapi.com/api/v1/get-horoscope/monthly?sign={sign}"
     sn = 1
 
+    try:
+        daily_horoscope_data = requests.get(horoscope_daily).json()['data']['horoscope']
+        weekly_horoscope_data = requests.get(horoscope_weekly).json()['data']['horoscope']
+        monthly_horoscope_data = requests.get(horoscope_monthly).json()['data']['horoscope']
+    except Exception as e:
+        print('Failed to get horoscope data', e)
+        weekly_horoscope_data = supabase.table("horoscope_week").select("*").eq("week", current_week).eq("sign", sign).execute()
+
     daily_horoscope_data = requests.get(horoscope_daily).json()['data']['horoscope']
-    weekly_horoscope_data = requests.get(horoscope_weekly).json()['data']['horoscope']
     monthly_horoscope_data = requests.get(horoscope_monthly).json()['data']['horoscope']
     save_horoscope_data(time_supabase='date', time='horoscope_day', date=day_today, data_horoscope=daily_horoscope_data)
     save_horoscope_data(time_supabase='week', time='horoscope_week', date=week_today, data_horoscope=weekly_horoscope_data)
